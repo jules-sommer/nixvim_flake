@@ -5,6 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/master";
     nixvim.url = "github:nix-community/nixvim";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    base24-themes.url = "github:jules-sommer/nix_b24_themes";
     neovim-nightly = {
       url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -12,7 +13,7 @@
   };
 
   outputs =
-    { nixvim, nixpkgs, neovim-nightly, flake-parts, ... }@inputs: 
+    { nixvim, nixpkgs, base24-themes, neovim-nightly, flake-parts, ... }@inputs: 
     let
     in
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -38,14 +39,15 @@
             inherit (pkgs) lib;
           } // pkgs.lib;
 
+          theme = base24-themes.themes.tokyo_night_dark;
+
           nixvimLib = nixvim.lib.${system};
           nixvim' = nixvim.legacyPackages.${system};
           nixvimModule = {
             inherit pkgs;
-            module = import ./config; # import the module directly
+            module = import ./config;
             extraSpecialArgs = {
-              # inherit (inputs) foo;
-              inherit lib pkgs;
+              inherit lib pkgs theme;
             };
           };
           nvim = nixvim'.makeNixvimWithModule nixvimModule;
