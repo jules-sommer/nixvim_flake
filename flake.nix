@@ -13,9 +13,14 @@
   };
 
   outputs =
-    { nixvim, nixpkgs, base24-themes, neovim-nightly, flake-parts, ... }@inputs: 
-    let
-    in
+    {
+      nixvim,
+      nixpkgs,
+      base24-themes,
+      neovim-nightly,
+      flake-parts,
+      ...
+    }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
@@ -29,17 +34,20 @@
         let
           pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [
-              neovim-nightly.overlays.default
-            ];
+            overlays = [ neovim-nightly.overlays.default ];
             config = { };
           };
 
-          lib = import ./lib {
-            inherit (pkgs) lib;
-          } // pkgs.lib;
+          lib = import ./lib { inherit (pkgs) lib; } // pkgs.lib;
+
+          local_plugins = {
+            treesitter-nu = import ./packages/treesitter-nu/default.nix { inherit pkgs; };
+            supermaven-nvim = import ./packages/supermaven-nvim/default.nix { inherit helpers pkgs; };
+          };
 
           theme = base24-themes.themes.tokyo_night_dark;
+          plugins = pkgs.vimPlugins // local_plugins;
+          helpers = nixvimLib.helpers;
 
           nixvimLib = nixvim.lib.${system};
           nixvim' = nixvim.legacyPackages.${system};
@@ -47,12 +55,18 @@
             inherit pkgs;
             module = import ./config;
             extraSpecialArgs = {
-              inherit lib pkgs theme;
+              inherit
+                lib
+                pkgs
+                theme
+                plugins
+                helpers
+                ;
             };
           };
           nvim = nixvim'.makeNixvimWithModule nixvimModule;
         in
-        assert builtins.isAttrs lib && lib ? enabled && lib ? disabled; 
+        assert builtins.isAttrs lib && lib ? enabled && lib ? disabled;
         {
           _module.args = {
             inherit pkgs;
@@ -66,6 +80,7 @@
           packages = {
             # Lets you run `nix run .` to start nixvim
             default = nvim;
+            inherit (local_plugins) supermaven-nvim treesitter-nu;
           };
         };
     };

@@ -1,14 +1,45 @@
-{ lib, pkgs, theme, ... }: 
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
-  inherit (lib) enabled disabled;
+  inherit (lib) enabled mkOpt types;
   plugins = pkgs.vimPlugins;
 in
 {
   imports = [
-    ./highlights/default.nix
+    ./colorscheme/default.nix
+    ./yanky/default.nix
+    ./lsp/default.nix
+    ./hop/default.nix
+    ./ollama/default.nix
+    ./cmp/default.nix
+    ./telescope/default.nix
+    ./treesitter/default.nix
+    ./startup/default.nix
+    ./oil/default.nix
   ];
 
+  options.neovim = {
+    mapleader = mkOpt (types.str) " " "Default leader key to use.";
+  };
+
   config = {
+    # settings for this flake's implementation of nixvim
+    lsp = enabled;
+    plugins = {
+      oil = enabled;
+      startup = enabled;
+      telescope = enabled;
+      yanky = enabled;
+      ollama = enabled;
+      noice = enabled;
+      hop = enabled;
+      cmp = enabled;
+    };
+
     globals.mapleader = " ";
     filetype.extension.nu = "nu";
 

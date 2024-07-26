@@ -1,5 +1,16 @@
 { lib, pkgs, theme, ... }: {
   config = {
+
+    # settings for tokyo-night-dark nvim theme (which our base24 theme is based on).
+    colorschemes.tokyonight = {
+      enable = true;
+      settings = {
+        style = "night";
+        terminal_colors = true;
+        transparent = true;
+      };
+    };
+
     # highlight groups for indent lines/guides
     # uses this flake's custom "RainbowColor" highlight groups ( set below )
     plugins.indent-blankline =
@@ -131,6 +142,19 @@
       with theme.colors;
       with theme.diagnostic;
       {
+        # Search + IncSearch for plugins.yanky
+        IncSearch = {
+          fg = base06;
+          bg = base13;
+          bold = true;
+        };
+        Search = {
+          fg = base02;
+          bg = base0CA;
+          bold = true;
+        };
+        # end plugins.yanky
+
         Normal = {
           fg = base05;
           bg = "NONE";
