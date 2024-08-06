@@ -1,8 +1,4 @@
-{ pkgs, helpers, ... }:
-let
-  mkNeovimPlugin = helpers.mkNeovimPlugin;
-  buildVimPlugin = pkgs.vimUtils.buildVimPlugin;
-in
+{ pkgs, buildVimPlugin, ... }:
 (buildVimPlugin {
   pname = "supermaven-nvim";
   version = "2024-05-29";

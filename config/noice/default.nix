@@ -16,7 +16,6 @@ in
         action = "<cmd>Noice dismiss<CR>";
         options = {
           desc = "Dismiss all popups via Noice";
-          noremap = true;
           silent = true;
         };
       }
@@ -29,7 +28,7 @@ in
         format = {
           cmdline = {
             pattern = "^:";
-            icon = "";
+            icon = "||>";
             lang = "vim";
           };
           search_down = {
@@ -56,7 +55,7 @@ in
           };
           help = {
             pattern = "^:%s*he?l?p?%s+";
-            icon = "";
+            icon = "?";
           };
           input = { };
         };

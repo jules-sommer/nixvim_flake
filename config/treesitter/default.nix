@@ -11,22 +11,22 @@ let
   inherit (lib) mkEnableOption mkIf enabled;
   inherit (plugins) treesitter-nu;
 
-  cfg = config.xeta.nixvim.plugins.treesitter;
+  cfg = config.plugins.treesitter;
 in
 {
-  options.xeta.nixvim.plugins.treesitter = {
-    enable = mkEnableOption "enable treesitter";
-  };
-
   config = mkIf cfg.enable {
     plugins.treesitter = {
-      enable = true;
       nixGrammars = true;
       nixvimInjections = true;
-      indent = true;
-      languageRegister.nu = "nu";
-      parserInstallDir = "~/.local/share/treesitter/parsers";
+      languageRegister = {
+        nu = [ "nu" ];
+      };
       grammarPackages = plugins.nvim-treesitter.passthru.allGrammars ++ [ treesitter-nu ];
+      settings = {
+        indent = {
+          enable = true;
+        };
+      };
     };
     plugins.treesitter-textobjects = {
       enable = true;
@@ -39,8 +39,15 @@ in
       select = enabled;
     };
     extraFiles = {
-      "queries/nu/highlights.scm" = builtins.readFile "${treesitter-nu}/queries/nu/highlights.scm";
-      "queries/nu/injections.scm" = builtins.readFile "${treesitter-nu}/queries/nu/injections.scm";
+      "queries/nu/highlights.scm" = {
+        enable = true;
+        source = "${treesitter-nu}/queries/nu/highlights.scm";
+      };
+      "queries/nu/injections.scm" = {
+        enable = true;
+        source = "${treesitter-nu}/queries/nu/injections.scm";
+      };
+      # "queries/nu/injections.scm" = builtins.readFile "${treesitter-nu}/queries/nu/injections.scm";
     };
   };
 }

@@ -10,3 +10,7 @@ Here's how it looks in action:
 
 `Welcome buffer via startup.nvim:`
 ![neovim screenshot #3](./.media/screenshot-3.png "startup.nvim welcome buffer")
+
+### About this project
+
+This project aims to be a fairly feature-complete and configurable neovim/nixvim configuration. It takes inspiration from [LunarVim](https://github.com/LunarVim/LunarVim) and [NvChad](https://github.com/NvChad/NvChad). You are welcome to use this configuration as a base for your own via forking or use what it provides and contribute / PR if you have changes or features or fixes that you have found move the project forward. I will be paying attention to the repo with the aim of triaging issues and reviewing PRs.

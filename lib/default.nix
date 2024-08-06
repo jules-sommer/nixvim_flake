@@ -1,5 +1,5 @@
-{ lib, ... }: 
-let 
+{ lib, ... }:
+let
   inherit (lib) mkOption types;
 in
 rec {
@@ -28,7 +28,6 @@ rec {
   ##
   #@ Type -> Any -> String
   mkOpt' = type: default: mkOpt type default null;
-
 
   ## Create a boolean NixOS module option.
   ##

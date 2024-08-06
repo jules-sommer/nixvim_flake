@@ -56,14 +56,6 @@ in
       lsp-format = enabled;
       nix-develop = enabled;
 
-      lspkind = {
-        enable = true;
-        extraOptions = {
-          cmp.enable = true;
-        };
-        mode = "symbol_text";
-      };
-
       lsp = {
         enable = true;
         servers = {
@@ -100,82 +92,72 @@ in
 
     keymaps = [
       {
-        action = helpers.mkRaw "require('lsp_lines').toggle";
         key = "<leader>l";
+        action = helpers.mkRaw "require('lsp_lines').toggle";
         options = {
           desc = "Toggle LSP virtual line diagnostics";
-          noremap = true;
         };
       }
       {
-        action = helpers.mkRaw "vim.lsp.buf.declaration";
         key = "gD";
+        action = helpers.mkRaw "vim.lsp.buf.declaration";
         options = {
-          noremap = true;
           desc = "Go to declaration";
         };
       }
       {
-        action = helpers.mkRaw "vim.lsp.buf.code_action";
         key = "<leader>ca";
+        action = helpers.mkRaw "vim.lsp.buf.code_action";
         options = {
-          noremap = true;
           desc = "See available code actions";
         };
       }
       (mkIf (incRenameEnabled) {
-        action = helpers.mkRaw "vim.lsp.buf.rename";
         key = "<leader>rn";
+        action = helpers.mkRaw "vim.lsp.buf.rename";
         options = {
-          noremap = true;
           desc = "Semi-intelligent rename via LSP";
         };
       })
       (mkIf (!incRenameEnabled) {
-        action = "<cmd>IncRename<CR>";
         key = "<leader>rn";
+        action = "<cmd>IncRename<CR>";
         options = {
-          noremap = true;
           desc = "Smart rename via IncRename and LSP";
         };
       })
       {
-        action = helpers.mkRaw "vim.diagnostic.open_float";
         key = "<leader>d";
+        action = helpers.mkRaw "vim.diagnostic.open_float";
         options = {
-          noremap = true;
           desc = "Show line diagnostics";
         };
       }
       {
-        action = helpers.mkRaw "vim.diagnostic.goto_prev";
         key = "[d";
+        action = helpers.mkRaw "vim.diagnostic.goto_prev";
         options = {
-          noremap = true;
           desc = "Go to previous diagnostic";
         };
       }
       {
-        action = helpers.mkRaw "vim.diagnostic.goto_next";
         key = "]d";
+        action = helpers.mkRaw "vim.diagnostic.goto_next";
         options = {
-          noremap = true;
           desc = "Go to next diagnostic";
         };
       }
       {
-        action = helpers.mkRaw "vim.lsp.buf.hover";
         key = "K";
+        action = helpers.mkRaw "vim.lsp.buf.hover";
         options = {
-          noremap = true;
           desc = "Show documentation for what is under cursor";
         };
       }
       {
-        action = "<cmd>LspRestart<CR>";
         key = "<leader>rs";
+        action = "<cmd>LspRestart<CR>";
         options = {
-          noremap = true;
           desc = "Restart LSP";
         };
       }

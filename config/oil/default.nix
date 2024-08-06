@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, helpers, ... }:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.plugins.oil;
@@ -8,33 +8,30 @@ in
     keymaps = [
       {
         key = "<leader>o";
-        action.__raw = "require('oil').toggle_float";
+        action = helpers.mkRaw "require('oil').toggle_float";
         options = {
           desc = "Find files using Oil";
-          noremap = true;
           silent = true;
         };
       }
       {
         key = "<leader>oh";
-        action.__raw = "require('oil').toggle_hidden";
+        action = helpers.mkRaw "require('oil').toggle_hidden";
         options = {
           desc = "Toggle hidden files in Oil";
-          noremap = true;
           silent = true;
         };
       }
       {
-        key = "q";
-        action.__raw = "require('oil').close";
+        key = "<C-c>";
+        action = helpers.mkRaw "require('oil').close";
         options = {
           desc = "Close the oil window";
-          noremap = true;
           silent = true;
         };
         mode = [
           "n"
-          "v"
+          "s"
         ];
       }
     ];
@@ -70,7 +67,7 @@ in
           " " = "actions.cd";
           "~" = "actions.tcd";
           "gs" = "actions.change_sort";
-          "gx" = "actions.pen_external";
+          "gx" = "actions.open_external";
           "g." = "actions.toggle_hidden";
           "g\\" = "actions.toggle_trash";
         };

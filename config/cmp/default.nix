@@ -1,81 +1,31 @@
-{ config, lib, ... }:
+{ config, lib, helpers, ... }:
 let
   inherit (lib) mkIf enabled;
   cfg = config.plugins.cmp;
 in
 {
   config =
-    let
-      global_mappings = {
-        "<C-b>" = "cmp.mapping.scroll_docs(-4)";
-        "<C-f>" = "cmp.mapping.scroll_docs(4)";
-        "<C-Space>" = "cmp.mapping.complete()";
-        "<C-c>" = "cmp.mapping.abort()";
-
-        "<C-p>" = "cmp.mapping.select_prev_item()";
-        "<C-n>" = "cmp.mapping.select_next_item()";
-        "<Up>" = "cmp.mapping.select_prev_item()";
-        "<Down>" = "cmp.mapping.select_next_item()";
-
-        "<CR>" = ''
-          cmp.mapping.confirm({
-            behavior = cmp.ConfirmBehavior.Replace,
-            select = true,
-          })
-        '';
-
-        "<Esc>" = ''
-          cmp.mapping(function(fallback)
-            local completion = require('supermaven-nvim.completion_preview')
-
-            if cmp.visible() then
-              cmp.abort()
-            end
-
-            if completion.inlay_instance ~= nil then
-              completion.on_dispose_inlay()
-            end
-
-            fallback()
-          end, {'i', 's'})
-        '';
-
-        "<Tab>" = ''
-          cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            else
-              fallback()
-            end 
-          end, {'i', 's'})
-        '';
-
-        "<S-Tab>" = ''
-          cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            else
-              fallback()
-            end
-          end, {'i', 's'})
-        '';
-      };
-    in
     mkIf cfg.enable {
       plugins = {
-        cmp-treesitter = enabled;
+        cmp-treesitter = {
+          enable = lib.mkDefault helpers.enableExceptInTests;
+        };
         cmp_yanky = enabled;
         cmp-cmdline = enabled;
         cmp-nvim-lsp-document-symbol = enabled;
         cmp-nvim-lsp-signature-help = enabled;
         cmp_luasnip = enabled;
-        # coq-nvim = enabled;
-        # coq-thirdparty = enabled;
-        # cmp-calc = enabled;
-        # cmp-vsnip = enabled;
-        # cmp-rg = enabled;
-        # cmp-fuzzy-buffer = disabled;
-        # cmp-fuzzy-path = enabled;
+        coq-nvim = enabled;
+        coq-thirdparty = enabled;
+        cmp-calc = enabled;
+        cmp-rg = enabled;
+        cmp-fuzzy-path = enabled;
+
+        lspkind = {
+          enable = true;
+          cmp = enabled;
+          mode = "symbol_text";
+        };
 
         cmp = {
           settings = {
@@ -95,52 +45,90 @@ in
               ];
             };
 
-            # snippet.expand = ''
-            #   function(args)
-            #     -- vim.fn["vsnip#anonymous"](args.body)
-            #     require('luasnip').lsp_expand(args.body)
-            #   end
-            # '';
+            snippet.expand = ''
+              function(args)
+                require('luasnip').lsp_expand(args.body)
+              end
+            '';
 
             sources = [
               {
                 name = "nvim_lsp";
-                keyword_length = 1;
+                keyword_length = 0;
               }
               {
                 name = "nvim_lsp_document_symbol";
-                keyword_length = 1;
-              }
-              {
-                name = "cmp_yanky";
-                keyword_length = 4;
+                keyword_length = 0;
               }
               {
                 name = "nvim_lsp_signature_help";
-                keyword_length = 1;
+                keyword_length = 0;
               }
-              {
-                name = "path";
-                keyword_length = 2;
-              }
-              # {
-              #   name = "rg";
-              #   keyword_length = 3;
-              # }
-              # {
-              #   name = "buffer";
-              #   keyword_length = 3;
-              # }
               {
                 name = "treesitter";
-                keyword_length = 1;
+                keyword_length = 0;
+              }
+              {
+                name = "fuzzy_path";
+                keyword_length = 2;
               }
             ];
 
             completion = { };
 
-            mapping = global_mappings // {
-              # add any other mappings here
+            mapping = {
+	      "<C-b>" = "cmp.mapping.scroll_docs(-4)";
+	      "<C-f>" = "cmp.mapping.scroll_docs(4)";
+	      "<C-Space>" = "cmp.mapping.complete()";
+	      "<C-c>" = "cmp.mapping.abort()";
+
+	      "<CR>" = ''
+		cmp.mapping.confirm({
+		  behavior = cmp.ConfirmBehavior.Replace,
+		  select = true,
+		})
+	      '';
+
+	      "<Tab>" = ''
+		cmp.mapping(function(fallback)
+		  if cmp.visible() then
+		    cmp.select_next_item()
+		  else
+		    fallback()
+		  end 
+		end, {'i', 's'})
+	      '';
+
+	      "<S-Tab>" = ''
+		cmp.mapping(function(fallback)
+		  if cmp.visible() then
+		    cmp.select_prev_item()
+		  else
+		    fallback()
+		  end
+		end, {'i', 's'})
+	      '';
+
+	      "<Esc>" = ''
+		cmp.mapping(function(fallback)
+		  local sm = require('supermaven-nvim.completion_preview')
+
+		  if cmp.visible() then
+		    cmp.abort()
+		  end
+
+		  if sm ~= nil and sm.inlay_instance ~= nil then
+		    sm.on_dispose_inlay()
+		  end
+
+		  fallback()
+		end, {'i', 's'})
+	      '';
+
+	      "<C-p>" = "cmp.mapping.select_prev_item()";
+	      "<C-n>" = "cmp.mapping.select_next_item()";
+	      "<Up>" = "cmp.mapping.select_prev_item()";
+	      "<Down>" = "cmp.mapping.select_next_item()";
             };
 
             window = {
@@ -156,38 +144,18 @@ in
 
             cmdline = {
               "/" = {
-                mapping = {
-                  __raw = "cmp.mapping.preset.cmdline()";
-                };
+                mapping = helpers.mkRaw "cmp.mapping.preset.cmdline()";
                 sources = [
                   { name = "nvim_lsp"; }
                   { name = "nvim_lsp_document_symbol"; }
                   { name = "nvim_lsp_signature_help"; }
-                  { name = "treesitter"; }
-                  {
-                    name = "rg";
-                    keyword_length = 3;
-                  }
-                  {
-                    name = "buffer";
-                    keyword_length = 3;
-                  }
+                  { name = "rg"; }
                 ];
               };
               ":" = {
-                mapping = {
-                  __raw = "cmp.mapping.preset.cmdline()";
-                };
+                mapping = helpers.mkRaw "cmp.mapping.preset.cmdline()";
                 sources = [
-                  # { name = "fuzzy_path"; }
-                  {
-                    name = "path";
-                    keyword_length = 1;
-                  }
-                  # {
-                  #   name = "rg";
-                  #   keyword_length = 3;
-                  # }
+                  { name = "fuzzy_path"; }
                   {
                     name = "cmdline";
                     keyword_length = 1;

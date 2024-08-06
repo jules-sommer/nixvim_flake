@@ -34,20 +34,18 @@
         let
           pkgs = import inputs.nixpkgs {
             inherit system;
-            overlays = [ neovim-nightly.overlays.default ];
-            config = { };
+            overlays = [
+              neovim-nightly.overlays.default
+              (final: prev: { neovim-unwrapped = prev.neovim; })
+            ];
           };
 
-          lib = import ./lib { inherit (pkgs) lib; } // pkgs.lib;
+          lib = import ./lib { inherit (pkgs) lib; } // pkgs.lib // { nixvim = nixvimLib // pkgs.lib; };
 
-          local_plugins = {
-            treesitter-nu = import ./packages/treesitter-nu/default.nix { inherit pkgs; };
-            supermaven-nvim = import ./packages/supermaven-nvim/default.nix { inherit helpers pkgs; };
-          };
+          local_plugins = import ./packages/default.nix { inherit pkgs lib; };
 
           theme = base24-themes.themes.tokyo_night_dark;
           plugins = pkgs.vimPlugins // local_plugins;
-          helpers = nixvimLib.helpers;
 
           nixvimLib = nixvim.lib.${system};
           nixvim' = nixvim.legacyPackages.${system};
@@ -60,7 +58,6 @@
                 pkgs
                 theme
                 plugins
-                helpers
                 ;
             };
           };
@@ -80,7 +77,7 @@
           packages = {
             # Lets you run `nix run .` to start nixvim
             default = nvim;
-            inherit (local_plugins) supermaven-nvim treesitter-nu;
+            inherit (local_plugins) supermaven-nvim treesitter-nu vim-smartword;
           };
         };
     };

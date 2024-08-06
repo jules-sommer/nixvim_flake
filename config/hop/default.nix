@@ -1,6 +1,7 @@
 { 
  config
 , lib
+, helpers
 , ...
 }:
 let
@@ -13,8 +14,7 @@ in
       keymaps = [
         {
           key = "f";
-          lua = true;
-          action = ''
+          action = helpers.mkRaw ''
             function()
               require('hop').hint_char1({
                 direction = require'hop.hint'.HintDirection.AFTER_CURSOR,
@@ -22,12 +22,10 @@ in
               })
             end
           '';
-          options.noremap = true;
         }
         {
           key = "F";
-          lua = true;
-          action = ''
+          action = helpers.mkRaw ''
             function()
               require('hop').hint_char1({
                 direction = require'hop.hint'.HintDirection.BEFORE_CURSOR,
@@ -35,12 +33,10 @@ in
               })
             end
           '';
-          options.noremap = true;
         }
         {
           key = "t";
-          lua = true;
-          action = ''
+          action = helpers.mkRaw ''
             function()
               require('hop').hint_char1({
                 direction = require'hop.hint'.HintDirection.AFTER_CURSOR,
@@ -49,12 +45,10 @@ in
               })
             end
           '';
-          options.noremap = true;
         }
         {
           key = "T";
-          lua = true;
-          action = ''
+          action = helpers.mkRaw ''
             function()
               require('hop').hint_char1({
                 direction = require'hop.hint'.HintDirection.BEFORE_CURSOR,
@@ -63,7 +57,6 @@ in
               })
             end
           '';
-          options.noremap = true;
         }
       ];
     };

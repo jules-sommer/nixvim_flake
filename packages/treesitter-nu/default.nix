@@ -1,8 +1,5 @@
-{
-  pkgs,
-  ...
-}:
-(pkgs.tree-sitter.buildGrammar {
+{ pkgs, buildGrammar, ... }:
+(buildGrammar {
   version = "0.0.1";
   language = "nu";
   src = (

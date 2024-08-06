@@ -2,16 +2,23 @@
   config,
   lib,
   pkgs,
+  helpers,
+  plugins,
   ...
 }:
 let
-  inherit (lib) enabled mkOpt types;
-  plugins = pkgs.vimPlugins;
+  inherit (lib)
+    enabled
+    disabled
+    mkOpt
+    types
+    ;
 in
 {
   imports = [
     ./colorscheme/default.nix
     ./yanky/default.nix
+    ./supermaven/default.nix
     ./lsp/default.nix
     ./hop/default.nix
     ./ollama/default.nix
@@ -21,10 +28,6 @@ in
     ./startup/default.nix
     ./oil/default.nix
   ];
-
-  options.neovim = {
-    mapleader = mkOpt (types.str) " " "Default leader key to use.";
-  };
 
   config = {
     # settings for this flake's implementation of nixvim
@@ -37,6 +40,25 @@ in
       ollama = enabled;
       noice = enabled;
       hop = enabled;
+      supermaven = {
+        enable = helpers.enableExceptInTests;
+        settings = {
+          inline-completion = {
+            enable = true;
+            suggestion-color = "#c899cc";
+          };
+          keymaps = {
+            enable = true;
+            accept-suggestion = "<Tab>";
+            clear-suggestion = "<C-c>";
+            accept-word = "<C-j>";
+            toggle-inline-completion = "<leader>s";
+          };
+        };
+      };
+      treesitter = {
+        enable = helpers.enableExceptInTests;
+      };
       cmp = enabled;
     };
 
@@ -44,23 +66,57 @@ in
     filetype.extension.nu = "nu";
 
     opts = {
-      clipboard = "unnamedplus";
-      number = true;
-      relativenumber = true;
-      shiftwidth = 2;
-      softtabstop = 2;
-      tabstop = 2;
+
+      background = "";
+      backup = false; # creates a backup file
+      writebackup = false; # if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
+      clipboard = "unnamedplus"; # allows neovim to access the system clipboard
+      cmdheight = 1; # more space in the neovim command line for displaying messages
+      completeopt = [
+        "menuone"
+        "noselect"
+      ];
+      conceallevel = 0; # so that `` is visible in markdown files
+      fileencoding = "utf-8"; # the encoding written to a file
+      foldmethod = "manual"; # folding, set to "expr" for treesitter based folding
+      foldexpr = ""; # set to "nvim_treesitter#foldexpr()" for treesitter based folding
+      hidden = true; # required to keep multiple buffers and open multiple buffers
+
+      hlsearch = true; # highlight all matches on previous search pattern
+      incsearch = true;
+      ignorecase = true; # ignore case in search patterns
+
+      mouse = "a"; # allow the mouse to be used in neovim
+      pumheight = 10; # pop up menu height
+      showmode = false; # we don't need to see things like -- INSERT -- anymore
+      smartcase = true; # smart case
+      splitbelow = true; # force all horizontal splits to go below current window
+      splitright = true; # force all vertical splits to go to the right of current window
+      swapfile = false; # creates a swapfile
+      termguicolors = true; # set term gui colors (most terminals support this)
+      timeoutlen = 300; # time to wait for a mapped sequence to complete (in milliseconds)
+      title = true; # set the title of window to the value of the titlestring
+      titlestring = "%<%F%=%l/%L - xetavim"; # what the title of the window will be set to
+      undodir = "undodir"; # set an undo directory
+      undofile = true; # enable persistent undo
+      updatetime = 50; # faster completion
+      expandtab = true; # convert tabs to spaces
       autoindent = true;
       smartindent = true;
-      expandtab = true;
-      wrap = false;
-      swapfile = false;
-      backup = false;
-      hlsearch = false;
-      incsearch = true;
-      termguicolors = true;
-      scrolloff = 8;
-      updatetime = 50;
+      shiftwidth = 2; # the number of spaces inserted for each indentation
+      softtabstop = 2;
+      tabstop = 2; # insert 2 spaces for a tab
+      cursorline = true; # highlight the current line
+      number = true; # set numbered lines
+      relativenumber = true; # make line numbering relative to cursor position
+      numberwidth = 4; # set number column width to 2 {default 4}
+      signcolumn = "yes"; # always show the sign column, otherwise it would shift the text each time
+      wrap = false; # display lines as one long line
+      scrolloff = 8; # minimal number of screen lines to keep above and below the cursor.
+      sidescrolloff = 8; # minimal number of screen lines to keep left and right of the cursor.
+      showcmd = false;
+      ruler = false;
+      laststatus = 3;
     };
 
     plugins = {
@@ -76,7 +132,6 @@ in
           extend = true;
         };
         hintConfig = {
-          border = "rounded";
           type = "window";
           position = "bottom";
         };
@@ -130,6 +185,8 @@ in
         };
       };
 
+      barbar = enabled;
+
       barbecue = enabled;
       rainbow-delimiters = enabled;
       better-escape = enabled;
@@ -139,11 +196,10 @@ in
       gitsigns = enabled;
       lualine = enabled;
       notify = enabled;
-      lazy = {
+      lazygit = enabled;
+      transparent = {
         enable = true;
       };
-      lazygit = enabled;
-      transparent = enabled;
       zellij = enabled;
     };
 
@@ -153,7 +209,9 @@ in
         config = "lua require('nu').setup()";
       }
       plugins.zoxide-vim
-      # supermaven-nvim
+      plugins.vim-wordmotion
+      plugins.vim-smartword
+      plugins.supermaven-nvim
       plugins.vim-vsnip
       plugins.fzf-vim
       plugins.telescope-file-browser-nvim
