@@ -63,7 +63,7 @@
           };
           nvim = nixvim'.makeNixvimWithModule nixvimModule;
         in
-        assert builtins.isAttrs lib && lib ? enabled && lib ? disabled;
+        assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? nixvim;
         {
           _module.args = {
             inherit pkgs;

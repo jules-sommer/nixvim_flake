@@ -1,14 +1,40 @@
-{ lib, pkgs, theme, ... }: {
+{
+  lib,
+  config,
+  pkgs,
+  theme,
+  ...
+}:
+let
+  cfg = config.colorschemes;
+in
+{
   config = {
+    assertions = [
+      {
+        # ensure that only one colorscheme is enabled
+        assertion = cfg.tokyonight.enable || cfg.kanagawa.enable;
+        message = "Only one colorscheme can be enabled at a time.";
+      }
+    ];
     colorschemes.kanagawa = {
-      enable = true;
       settings = {
         colors = {
           theme = {
             all = {
-              float = {
-              bg_gutter = "none";
-                bg = "none";
+              ui = {
+                float = {
+                  bg_gutter = "none";
+                  bg = "none";
+                };
+                pmenu = {
+                  bg = "none";
+                  fg = theme.colors.base03;
+                };
+                bg_search = "none";
+                bg_visual = "none";
+
+                bg_gutter = "none";
               };
             };
           };
@@ -28,21 +54,21 @@
 
               -- Popular plugins that open floats will link to NormalFloat by default;
               -- set their background accordingly if you wish to keep them dark and borderless
-              LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
-              MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
+              -- LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
+              -- MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
 
-              TelescopeTitle = { fg = theme.ui.special, bold = true },
-              TelescopePromptNormal = { bg = theme.ui.bg_p1 },
-              TelescopePromptBorder = { fg = theme.ui.bg_p1, bg = theme.ui.bg_p1 },
-              TelescopeResultsNormal = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m1 },
-              TelescopeResultsBorder = { fg = theme.ui.bg_m1, bg = theme.ui.bg_m1 },
-              TelescopePreviewNormal = { bg = theme.ui.bg_dim },
-              TelescopePreviewBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
+              -- TelescopeTitle = { fg = theme.ui.special, bold = true },
+              -- TelescopePromptNormal = { bg = theme.ui.bg_p1 },
+              -- TelescopePromptBorder = { fg = theme.ui.bg_p1, bg = "none" },
+              -- TelescopeResultsNormal = { fg = theme.ui.fg_dim, bg = "none" },
+              -- TelescopeResultsBorder = { fg = theme.ui.bg_m1, bg = "none" },
+              -- TelescopePreviewNormal = { bg = theme.ui.bg_dim },
+              -- TelescopePreviewBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
 
-              Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1, blend = vim.o.pumblend },  -- add `blend = vim.o.pumblend` to enable transparency
-              PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
-              PmenuSbar = { bg = theme.ui.bg_m1 },
-              PmenuThumb = { bg = theme.ui.bg_p2 },
+              -- Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1, blend = vim.o.pumblend },  -- add `blend = vim.o.pumblend` to enable transparency
+              -- PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
+              -- PmenuSbar = { bg = theme.ui.bg_m1 },
+              -- PmenuThumb = { bg = theme.ui.bg_p2 },
             }
           end
         '';
@@ -61,7 +87,6 @@
 
     # settings for tokyo-night-dark nvim theme (which our base24 theme is based on).
     colorschemes.tokyonight = {
-      enable = false;
       settings = {
         style = "night";
         terminal_colors = true;
@@ -93,9 +118,6 @@
           };
         };
       };
-
-    # highlight groups for bufferline tab bar 
-    # (menu/tab bar containing open buffers)
 
     # highlight setting is for nvim highlight groups that are
     # custom, i.e not overriding an existing highlight group.
@@ -152,7 +174,7 @@
 
     # this override setting is for overriding highlight groups
     # that have been set by neovim or another plugin by default
-    highlightOverride = 
+    highlightOverride =
       with theme.colors;
       with theme.diagnostic;
       {
@@ -162,9 +184,10 @@
           bg = base13;
           bold = true;
         };
+
         Search = {
           fg = base02;
-          bg = base0CA;
+          bg = base0E;
           bold = true;
         };
         # end plugins.yanky
@@ -187,6 +210,37 @@
           bg = "NONE";
           bold = true;
           italic = true;
+        };
+
+        CmpCompletionBorder = {
+          fg = base06;
+          bg = "NONE";
+        };
+
+        FloatBorder = {
+          fg = base06;
+          bg = "NONE";
+        };
+
+        NormalFloat = {
+          fg = base06;
+          bg = "NONE";
+          blend = 95;
+        };
+
+        TabLine = {
+          fg = base06;
+          bg = "NONE";
+        };
+
+        FloatermBorder = {
+          fg = base06;
+          bg = "NONE";
+        };
+
+        MsgArea = {
+          fg = base06;
+          bg = "NONE";
         };
 
         Pmenu = {

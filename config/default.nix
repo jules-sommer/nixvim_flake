@@ -62,6 +62,24 @@ in
       cmp = enabled;
     };
 
+    colorschemes.kanagawa = disabled;
+    colorschemes.tokyonight = enabled;
+
+    extraConfigLua = ''
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        pattern = "kanagawa",
+        callback = function()
+          if vim.o.background == "light" then
+            vim.fn.system("kitty +kitten themes Kanagawa_light")
+          elseif vim.o.background == "dark" then
+            vim.fn.system("kitty +kitten themes Kanagawa_dragon")
+          else
+            vim.fn.system("kitty +kitten themes Kanagawa")
+          end
+        end,
+      })
+    '';
+
     globals.mapleader = " ";
     filetype.extension.nu = "nu";
 
@@ -188,7 +206,7 @@ in
       barbar = enabled;
 
       barbecue = enabled;
-      rainbow-delimiters = enabled;
+      rainbow-delimiters.enable = helpers.enableExceptInTests;
       better-escape = enabled;
       neoscroll = enabled;
       # harpoon = enabled;
@@ -199,6 +217,31 @@ in
       lazygit = enabled;
       transparent = {
         enable = true;
+        settings = {
+          extra_groups = [
+            "BufferLineTabClose"
+            "BufferLineBufferSelected"
+            "BufferLineFill"
+            "BufferLineBackground"
+            "BufferLineSeparator"
+            "BufferLineIndicatorSelected"
+            "TelescopePrompt"
+            "TelescopeNormal"
+            "TelescopePromptNormal"
+            "TelescopePromptBorder"
+            "TelescopeResultsBorder"
+            "TelescopePreviewBorder"
+            "TelescopePromptTitle"
+            "TelescopeResultsTitle"
+            "TelescopePreviewTitle"
+            "TelescopePreviewNormal"
+            "Pmenu"
+            "SignColumn"
+            "PmenuSel"
+            "NormalFloat"
+            "NormalDark"
+          ];
+        };
       };
       zellij = enabled;
     };
