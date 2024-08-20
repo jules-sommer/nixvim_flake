@@ -111,10 +111,12 @@ in
       {
         settings = {
           indent = {
-            inherit highlight;
+            # inherit highlight;
+            priority = 1;
           };
           scope = {
-            inherit highlight;
+            # inherit highlight;
+            priority = 1024;
           };
         };
       };
@@ -122,54 +124,7 @@ in
     # highlight setting is for nvim highlight groups that are
     # custom, i.e not overriding an existing highlight group.
     highlight = with theme.colors; {
-      RainbowRed = {
-        fg = base0F;
-        bg = "NONE";
-        bold = true;
-        blend = 95;
-      };
 
-      RainbowYellow = {
-        fg = base0A;
-        bg = "NONE";
-        bold = true;
-        blend = 95;
-      };
-
-      RainbowBlue = {
-        fg = base0D;
-        bg = "NONE";
-        bold = true;
-        blend = 95;
-      };
-
-      RainbowOrange = {
-        fg = base09;
-        bg = "NONE";
-        bold = true;
-        blend = 95;
-      };
-
-      RainbowGreen = {
-        fg = base0B;
-        bg = "NONE";
-        bold = true;
-        blend = 95;
-      };
-
-      RainbowViolet = {
-        fg = base0E;
-        bg = "NONE";
-        bold = true;
-        blend = 95;
-      };
-
-      RainbowCyan = {
-        fg = base0C;
-        bg = "NONE";
-        bold = true;
-        blend = 95;
-      };
     };
 
     # this override setting is for overriding highlight groups
@@ -178,6 +133,55 @@ in
       with theme.colors;
       with theme.diagnostic;
       {
+        RainbowRed = {
+          fg = base0F;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowYellow = {
+          fg = base0A;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowBlue = {
+          fg = base0D;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowOrange = {
+          fg = base09;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowGreen = {
+          fg = base0B;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowViolet = {
+          fg = base0E;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowCyan = {
+          fg = base0C;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
         # Search + IncSearch for plugins.yanky
         IncSearch = {
           fg = base06;

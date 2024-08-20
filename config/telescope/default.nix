@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  helpers,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf enabled;
   cfg = config.plugins.telescope;
@@ -38,7 +43,7 @@ in
           frecency = {
             enable = true;
             settings = {
-              db_root = "~/.local/share/nvim/telescope/frecency";
+              db_root = helpers.mkRaw "vim.fn.stdpath 'data'";
               disable_devicons = false;
               db_safe_mode = false;
               ignore_patterns = [
@@ -171,7 +176,7 @@ in
       }
       {
         action = "<cmd>Telescope diagnostics bufnr=0<CR>";
-        key = "<leader>D";
+        key = "<leader>d";
         options = {
           noremap = true;
           desc = "Show buffer diagnostics";
