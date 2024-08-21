@@ -5,6 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/master";
     nixvim.url = "github:nix-community/nixvim";
     flake-parts.url = "github:hercules-ci/flake-parts";
+
     base24-themes.url = "github:jules-sommer/nix_b24_themes";
     neovim-nightly = {
       url = "github:nix-community/neovim-nightly-overlay";
@@ -40,7 +41,19 @@
             ];
           };
 
-          lib = import ./lib { inherit (pkgs) lib; } // pkgs.lib // { nixvim = nixvimLib // pkgs.lib; };
+          lib =
+            import ./lib { inherit (pkgs) lib; }
+            // pkgs.lib
+            // {
+              nixvim =
+                nixvimLib
+                // pkgs.lib
+                # TODO: this is a hack because we're tracking the master branch and it
+                # seems like they're migrating the location of these helpers as per this
+                # [commit](https://github.com/nix-community/nixvim/commit/96d0a2e390128be2ea19b714d4215326abfadf83)
+                # and others. Remove this once all plugins build again without this shim.
+                // nixvimLib.helpers;
+            };
 
           local_plugins = import ./packages/default.nix { inherit pkgs lib; };
 
@@ -63,7 +76,7 @@
           };
           nvim = nixvim'.makeNixvimWithModule nixvimModule;
         in
-        assert builtins.isAttrs lib && lib ? enabled && lib ? disabled;
+        assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? nixvim;
         {
           _module.args = {
             inherit pkgs;
@@ -77,7 +90,12 @@
           packages = {
             # Lets you run `nix run .` to start nixvim
             default = nvim;
-            inherit (local_plugins) supermaven-nvim treesitter-nu vim-smartword;
+            inherit (local_plugins)
+              supermaven-nvim
+              treesitter-nu
+              vim-smartword
+              satellite-nvim
+              ;
           };
         };
     };

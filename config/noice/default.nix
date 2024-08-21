@@ -1,7 +1,8 @@
 {
   config,
   lib,
-  theme,
+  helpers,
+  plugins,
   ...
 }:
 let
@@ -19,7 +20,38 @@ in
           silent = true;
         };
       }
+      # vim.keymap.set({ "n", "i", "s" }, "<c-f>", function()
+      #   if not require("noice.lsp").scroll(4) then
+      #     return "<c-f>"
+      #   end
+      # end, { silent = true, expr = true })
+
+      {
+        key = "<C-f>";
+        action = helpers.mkRaw ''
+          require("noice.lsp").scroll(4) then return "<C-f>" end
+        '';
+        options.silent = true;
+        options.expr = true;
+      }
+
+      {
+        key = "<C-b>";
+        action = helpers.mkRaw ''
+          require("noice.lsp").scroll(-4) then return "<C-b>" end
+        '';
+        options.silent = true;
+        options.expr = true;
+      }
+
+      # vim.keymap.set({ "n", "i", "s" }, "<c-b>", function()
+      #   if not require("noice.lsp").scroll(-4) then
+      #     return "<c-b>"
+      #   end
+      # end, { silent = true, expr = true })
     ];
+
+    extraPlugins = [ plugins.fzf-lua ];
 
     plugins.noice = {
       cmdline = {
@@ -64,6 +96,8 @@ in
         enabled = true;
         excludedFiletypes = [
           "cmp_menu"
+          "neo-tree"
+          "neo-tree-popup"
           "cmp_docs"
           "notify"
         ];
@@ -91,16 +125,17 @@ in
         };
       };
       presets = {
-        bottom_search = false;
-        command_palette = false;
+        bottom_search = true;
+        command_palette = true;
         long_message_to_split = true;
         inc_rename = true;
         lsp_doc_border = true;
       };
       notify = {
-        enabled = true;
+        enabled = config.plugins.notify.enable;
         view = "notify";
       };
+
       popupmenu = {
         enabled = true;
         backend = "cmp";
@@ -124,6 +159,17 @@ in
             };
           };
           view = "hover";
+        };
+        message = {
+          enabled = true;
+          view = "notify";
+        };
+        progress = {
+          enabled = true;
+          format = "lsp_progress";
+          formatDone = "lsp_progress";
+          throttle = 1000 / 30;
+          view = "mini";
         };
         hover.enabled = true;
       };
