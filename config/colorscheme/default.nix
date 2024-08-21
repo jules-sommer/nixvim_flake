@@ -25,10 +25,10 @@ in
               ui = {
                 float = {
                   bg_gutter = "none";
-                  bg = "none";
+                  bg = theme.colors.base00;
                 };
                 pmenu = {
-                  bg = "none";
+                  bg = theme.colors.base00;
                   fg = theme.colors.base03;
                 };
                 bg_search = "none";
@@ -43,7 +43,7 @@ in
           function(colors)
             local theme = colors.theme
             return {
-              NormalFloat = { bg = "none" },
+              NormalFloat = { bg = theme.ui.bg_m3 },
               FloatBorder = { bg = "none" },
               FloatTitle = { bg = "none" },
 
@@ -54,7 +54,7 @@ in
 
               -- Popular plugins that open floats will link to NormalFloat by default;
               -- set their background accordingly if you wish to keep them dark and borderless
-              -- LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
+              LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
               -- MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
 
               -- TelescopeTitle = { fg = theme.ui.special, bold = true },
@@ -65,10 +65,10 @@ in
               -- TelescopePreviewNormal = { bg = theme.ui.bg_dim },
               -- TelescopePreviewBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
 
-              -- Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1, blend = vim.o.pumblend },  -- add `blend = vim.o.pumblend` to enable transparency
-              -- PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
-              -- PmenuSbar = { bg = theme.ui.bg_m1 },
-              -- PmenuThumb = { bg = theme.ui.bg_p2 },
+              Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1, blend = vim.o.pumblend },  -- add `blend = vim.o.pumblend` to enable transparency
+              PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
+              PmenuSbar = { bg = theme.ui.bg_m1 },
+              PmenuThumb = { bg = theme.ui.bg_p2 },
             }
           end
         '';
@@ -80,7 +80,7 @@ in
         functionStyle = { };
         terminalColors = true;
         theme = "dragon";
-        transparent = true;
+        transparent = false;
         undercurl = true;
       };
     };
@@ -90,7 +90,7 @@ in
       settings = {
         style = "night";
         terminal_colors = true;
-        transparent = true;
+        transparent = false;
       };
     };
 
@@ -258,12 +258,12 @@ in
         };
 
         TelescopeNormal = {
-          bg = "NONE";
-          fg = base01;
+          bg = base00;
+          fg = base06;
         };
 
         TelescopePromptNormal = {
-          bg = "NONE";
+          bg = base00;
           fg = base06;
         };
 
@@ -326,7 +326,7 @@ in
 
         VirtText = {
           bg = "NONE";
-          fg = base0C;
+          fg = base03;
           bold = true;
         };
 

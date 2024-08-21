@@ -1,4 +1,9 @@
-{ config, lib, theme, ... }:
+{
+  config,
+  lib,
+  theme,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf enabled;
   cfg = config.plugins.yanky;

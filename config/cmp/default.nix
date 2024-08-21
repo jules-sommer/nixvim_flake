@@ -52,10 +52,15 @@ in
             documentation = {
               border = "rounded";
               winhighlight = "FloatBorder:TelescopeBorder,Normal:Pmenu";
+              zindex = 300;
+              style = "minimal";
             };
+
             completion = {
               border = "rounded";
               winhighlight = "FloatBorder:TelescopeBorder,Normal:Pmenu";
+              zindex = 300;
+              style = "minimal";
             };
           };
           view = {
@@ -110,6 +115,10 @@ in
                 require('luasnip').lsp_expand(args.body)
               end
             '';
+
+            experimental = {
+              native_menu = false;
+            };
 
             sources = [
               {
@@ -201,6 +210,7 @@ in
 
           # plugins.cmp.cmdline..window.documentation.winhighlight;
           cmdline = {
+            inherit window view;
             "/" = {
               inherit window view;
               mapping = helpers.mkRaw "cmp.mapping.preset.cmdline()";

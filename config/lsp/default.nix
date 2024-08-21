@@ -6,7 +6,12 @@
   ...
 }:
 let
-  inherit (lib) mkEnableOption mkIf enabled disabled;
+  inherit (lib)
+    mkEnableOption
+    mkIf
+    enabled
+    disabled
+    ;
 
   cfg = config.lsp;
   incRenameEnabled = config.plugins.inc-rename.enable;
@@ -90,77 +95,179 @@ in
       };
     };
 
-    keymaps = [
+    autoGroups = {
+      UserLspConfig = {
+        clear = true;
+      };
+    };
+
+    autoCmd = [
       {
-        key = "<leader>l";
-        action = helpers.mkRaw "require('lsp_lines').toggle";
-        options = {
-          desc = "Toggle LSP virtual line diagnostics";
-        };
-      }
-      {
-        key = "gD";
-        action = helpers.mkRaw "vim.lsp.buf.declaration";
-        options = {
-          desc = "Go to declaration";
-        };
-      }
-      {
-        key = "<leader>ca";
-        action = helpers.mkRaw "vim.lsp.buf.code_action";
-        options = {
-          desc = "See available code actions";
-        };
-      }
-      (mkIf (incRenameEnabled) {
-        key = "<leader>rn";
-        action = helpers.mkRaw "vim.lsp.buf.rename";
-        options = {
-          desc = "Semi-intelligent rename via LSP";
-        };
-      })
-      (mkIf (!incRenameEnabled) {
-        key = "<leader>rn";
-        action = "<cmd>IncRename<CR>";
-        options = {
-          desc = "Smart rename via IncRename and LSP";
-        };
-      })
-      {
-        key = "<leader>d";
-        action = helpers.mkRaw "vim.diagnostic.open_float";
-        options = {
-          desc = "Show line diagnostics";
-        };
-      }
-      {
-        key = "[d";
-        action = helpers.mkRaw "vim.diagnostic.goto_prev";
-        options = {
-          desc = "Go to previous diagnostic";
-        };
-      }
-      {
-        key = "]d";
-        action = helpers.mkRaw "vim.diagnostic.goto_next";
-        options = {
-          desc = "Go to next diagnostic";
-        };
-      }
-      {
-        key = "K";
-        action = helpers.mkRaw "vim.lsp.buf.hover";
-        options = {
-          desc = "Show documentation for what is under cursor";
-        };
-      }
-      {
-        key = "<leader>rs";
-        action = "<cmd>LspRestart<CR>";
-        options = {
-          desc = "Restart LSP";
+        event = "LspAttach";
+        group = "UserLspConfig";
+        callback = {
+          __raw = ''
+            function(args)
+              local client = vim.lsp.get_client_by_id(args.data.client_id)
+              if client.server_capabilities.inlayHintProvider then
+                vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+              end
+            end
+          '';
         };
       }
     ];
+
+    keymapsOnEvents = {
+      InsertEnter = [
+        {
+          action = helpers.mkRaw ''require("cmp").mapping.confirm()'';
+          key = "<C-y>";
+        }
+        {
+          action = helpers.mkRaw ''require("cmp").mapping.select_next_item()'';
+          key = "<C-n>";
+        }
+      ];
+      LspAttach = [
+        {
+          key = "<leader>l";
+          action = helpers.mkRaw "require('lsp_lines').toggle";
+          options = {
+            desc = "Toggle LSP virtual line diagnostics";
+            buffer = true;
+          };
+        }
+        {
+          key = "gD";
+          action = helpers.mkRaw "vim.lsp.buf.declaration";
+          options = {
+            desc = "Go to declaration";
+          };
+        }
+        {
+          key = "<leader>ca";
+          action = helpers.mkRaw "vim.lsp.buf.code_action";
+          options = {
+            desc = "See available code actions";
+          };
+        }
+        (mkIf (incRenameEnabled) {
+          key = "<leader>rn";
+          action = helpers.mkRaw "vim.lsp.buf.rename";
+          options = {
+            desc = "Semi-intelligent rename via LSP";
+          };
+        })
+        (mkIf (!incRenameEnabled) {
+          key = "<leader>rn";
+          action = "<cmd>IncRename<CR>";
+          options = {
+            desc = "Smart rename via IncRename and LSP";
+          };
+        })
+        {
+          key = "<leader>d";
+          action = helpers.mkRaw "vim.diagnostic.open_float";
+          options = {
+            desc = "Show line diagnostics";
+          };
+        }
+        {
+          key = "[d";
+          action = helpers.mkRaw "vim.diagnostic.goto_prev";
+          options = {
+            desc = "Go to previous diagnostic";
+          };
+        }
+        {
+          key = "]d";
+          action = helpers.mkRaw "vim.diagnostic.goto_next";
+          options = {
+            desc = "Go to next diagnostic";
+          };
+        }
+        {
+          key = "K";
+          action = helpers.mkRaw "vim.lsp.buf.hover";
+          options = {
+            desc = "Show documentation for what is under cursor";
+          };
+        }
+        {
+          key = "<leader>rs";
+          action = "<cmd>LspRestart<CR>";
+          options = {
+            desc = "Restart LSP";
+          };
+        }
+        {
+          key = "gD";
+          action = "vim.lsp.buf.declaration";
+          options = {
+            desc = "Jump to declaration";
+            buffer = true;
+          };
+        }
+        {
+          key = "gi";
+          action = "vim.lsp.buf.implementation";
+          options = {
+            desc = "Lists all the implementations for the symbol under the cursor";
+            buffer = true;
+          };
+        }
+        {
+          key = "go";
+          action = "vim.lsp.buf.type_definition";
+          options = {
+            desc = "Jumps to the definition of the type symbol";
+            buffer = true;
+          };
+        }
+        {
+          key = "gr";
+          action = "vim.lsp.buf.references";
+          options = {
+            desc = "Lists all the references";
+            buffer = true;
+          };
+        }
+        {
+          key = "gs";
+          action = "vim.lsp.buf.signature_help";
+          options = {
+            desc = "Displays a function's signature information";
+            buffer = true;
+          };
+        }
+        {
+          key = "<F2>";
+          action = "vim.lsp.buf.rename";
+          options = {
+            desc = "Renames all references to the symbol under the cursor";
+            buffer = true;
+          };
+        }
+        {
+          key = "<F4>";
+          action = "vim.lsp.buf.code_action";
+          options = {
+            desc = "Selects a code action available at the current cursor position";
+            buffer = true;
+          };
+        }
+        {
+          key = "gl";
+          action = "vim.diagnostic.open_float";
+          options = {
+            desc = "Show diagnostics in a floating window";
+            buffer = true;
+          };
+        }
+      ];
+    };
+
+    keymaps = [ ];
   };
 }

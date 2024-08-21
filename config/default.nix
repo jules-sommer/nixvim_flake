@@ -1,16 +1,15 @@
 {
   lib,
   helpers,
+  config,
   theme,
   plugins,
   ...
 }:
-let
-  inherit (lib) enabled disabled;
-in
+with lib;
 {
   imports = [
-    ./colorscheme/default.nix
+    # ./colorscheme/default.nix
     ./yanky/default.nix
     ./supermaven/default.nix
     ./lsp/default.nix
@@ -22,7 +21,7 @@ in
     ./startup/default.nix
     ./oil/default.nix
     ./undotree/default.nix
-    ./neo-tree/default.nix
+    # ./neo-tree/default.nix
   ];
 
   config = {
@@ -58,23 +57,500 @@ in
       cmp = enabled;
     };
 
-    colorschemes.kanagawa = disabled;
-    colorschemes.tokyonight = enabled;
+    colorschemes.kanagawa = {
+      enable = false;
+      settings = {
+        colors = {
+          theme = {
+            all = {
+              ui = {
+                float = {
+                  bg_gutter = theme.colors.base00;
+                  bg = theme.colors.base00;
+                };
+                pmenu = {
+                  bg = theme.colors.base00;
+                  fg = theme.colors.base03;
+                };
+                bg_search = "none";
+                bg_visual = "none";
 
-    extraConfigLuaPost = ''
-      vim.api.nvim_create_autocmd("ColorScheme", {
-        pattern = "kanagawa",
-        callback = function()
-          if vim.o.background == "light" then
-            vim.fn.system("kitty +kitten themes Kanagawa_light")
-          elseif vim.o.background == "dark" then
-            vim.fn.system("kitty +kitten themes Kanagawa_dragon")
-          else
-            vim.fn.system("kitty +kitten themes Kanagawa")
-          end
-        end,
-      })
-    '';
+                bg_gutter = "none";
+              };
+            };
+          };
+        };
+        # overrides = ''
+        #   function(colors)
+        #     local theme = colors.theme
+        #     return {
+        #       NormalFloat = { bg = theme.ui.bg_m3 },
+        #       FloatBorder = { bg = "none" },
+        #       FloatTitle = { bg = "none" },
+        #
+        #       -- Save an hlgroup with dark background and dimmed foreground
+        #       -- so that you can use it where your still want darker windows.
+        #       -- E.g.: autocmd TermOpen * setlocal winhighlight=Normal:NormalDark
+        #       NormalDark = { fg = theme.ui.fg_dim, bg = theme.ui.bg_m3 },
+        #
+        #       -- Popular plugins that open floats will link to NormalFloat by default;
+        #       -- set their background accordingly if you wish to keep them dark and borderless
+        #       LazyNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
+        #       -- MasonNormal = { bg = theme.ui.bg_m3, fg = theme.ui.fg_dim },
+        #
+        #       -- TelescopeTitle = { fg = theme.ui.special, bold = true },
+        #       -- TelescopePromptNormal = { bg = theme.ui.bg_p1 },
+        #       TelescopePromptBorder = { fg = theme.ui.bg_p1, bg = "none" },
+        #       -- TelescopeResultsNormal = { fg = theme.ui.fg_dim, bg = "none" },
+        #       -- TelescopeResultsBorder = { fg = theme.ui.bg_m1, bg = "none" },
+        #       -- TelescopePreviewNormal = { bg = theme.ui.bg_dim },
+        #       -- TelescopePreviewBorder = { bg = theme.ui.bg_dim, fg = theme.ui.bg_dim },
+        #
+        #       Pmenu = { fg = theme.ui.shade0, bg = theme.ui.bg_p1, blend = vim.o.pumblend },  -- add `blend = vim.o.pumblend` to enable transparency
+        #       PmenuSel = { fg = "NONE", bg = theme.ui.bg_p2 },
+        #       PmenuSbar = { bg = theme.ui.bg_m1 },
+        #       PmenuThumb = { bg = theme.ui.bg_p2 },
+        #     }
+        #   end
+        # '';
+        commentStyle = {
+          italic = true;
+        };
+        compile = false;
+        dimInactive = false;
+        functionStyle = { };
+        terminalColors = true;
+        theme = "dragon";
+        transparent = true;
+        undercurl = true;
+      };
+    };
+    colorschemes.tokyonight = enabled;
+    colorschemes.rose-pine = {
+      enable = false;
+      settings = {
+        # before_highlight = "function(group, highlight, palette) end";
+        dark_variant = "moon";
+        dim_inactive_windows = true;
+        enable = {
+          legacy_highlights = false;
+          migrations = true;
+          terminal = true;
+        };
+        extend_background_behind_borders = true;
+        groups = {
+          border = "muted";
+          link = "iris";
+          panel = "surface";
+
+          error = "love";
+          hint = "iris";
+          info = "foam";
+          note = "pine";
+          todo = "rose";
+          warn = "gold";
+
+          git_add = "foam";
+          git_change = "rose";
+          git_delete = "love";
+          git_dirty = "rose";
+          git_ignore = "muted";
+          git_merge = "iris";
+          git_rename = "pine";
+          git_stage = "iris";
+          git_text = "rose";
+          git_untracked = "subtle";
+
+          h1 = "iris";
+          h2 = "foam";
+          h3 = "rose";
+          h4 = "gold";
+          h5 = "pine";
+          h6 = "foam";
+        };
+
+        highlight_groups = {
+          Pmenu = {
+            bg = "NONE";
+            fg = "text";
+          };
+
+          PmenuSel = {
+            bg = "NONE";
+            fg = "text";
+          };
+
+          TelescopePromptNormal = {
+            bg = "muted";
+            fg = "text";
+          };
+
+          TelescopePromptPrefix = {
+            fg = "text";
+            bg = "NONE";
+            bold = true;
+          };
+
+          TelescopePromptCounter = {
+            fg = "text";
+            bg = "NONE";
+            bold = true;
+          };
+
+          TelescopePromptTitle = {
+            fg = "text";
+            bg = "NONE";
+            bold = true;
+          };
+
+          TelescopePromptBorder = {
+            bg = "NONE";
+            fg = "muted";
+          };
+
+          TelescopeResultsNormal = {
+            bg = "NONE";
+            fg = "text";
+          };
+
+          TelescopeResultsTitle = {
+            fg = "text";
+            bg = "NONE";
+            bold = true;
+          };
+
+          TelescopeResultsBorder = {
+            bg = "NONE";
+            fg = "muted";
+          };
+
+          TelescopePreviewNormal = {
+            bg = "NONE";
+            fg = "text";
+          };
+
+          TelescopePreviewTitle = {
+            fg = "text";
+            bg = "NONE";
+            bold = true;
+          };
+          NormalFloat = {
+            bg = "surface";
+            fg = "text";
+          };
+          TelescopeBorder = {
+            bg = "none";
+            fg = "text";
+          };
+          TelescopeFloat = {
+            bg = "surface";
+            fg = "text";
+          };
+          FloatBorder = {
+            bg = "none";
+            fg = "text";
+          };
+          FloatTitle = {
+            bg = "surface";
+            fg = "text";
+          };
+        };
+        styles = {
+          bold = true;
+          italic = true;
+          transparency = true;
+        };
+        variant = "moon";
+      };
+    };
+    highlightOverride =
+      with theme.colors;
+      with theme.diagnostic;
+      {
+        RainbowRed = {
+          fg = base0F;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowYellow = {
+          fg = base0A;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowBlue = {
+          fg = base0D;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowOrange = {
+          fg = base09;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowGreen = {
+          fg = base0B;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowViolet = {
+          fg = base0E;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        RainbowCyan = {
+          fg = base0C;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        # Search + IncSearch for plugins.yanky
+        IncSearch = {
+          fg = base06;
+          bg = base13;
+          bold = true;
+        };
+
+        Search = {
+          fg = base02;
+          bg = base0E;
+          bold = true;
+        };
+        # end plugins.yanky
+
+        # Normal = {
+        #   fg = base05;
+        #   bg = "NONE";
+        # };
+        # LineNr = {
+        #   fg = base05;
+        #   bg = "NONE";
+        # };
+        # SignColumn = {
+        #   fg = base05;
+        #   bg = "NONE";
+        # };
+        #
+        # Comment = {
+        #   fg = base05;
+        #   bg = "NONE";
+        #   bold = true;
+        #   italic = true;
+        # };
+        #
+        # CmpCompletionBorder = {
+        #   fg = base06;
+        #   bg = "NONE";
+        # };
+
+        FloatBorder = {
+          fg = base06;
+          bg = "NONE";
+        };
+
+        # NormalFloat = {
+        #   fg = base06;
+        #   bg = "NONE";
+        #   blend = 20;
+        # };
+
+        # TabLine = {
+        #   fg = base06;
+        #   bg = "NONE";
+        # };
+        #
+        # FloatermBorder = {
+        #   fg = base06;
+        #   bg = "NONE";
+        # };
+        #
+        # MsgArea = {
+        #   fg = base06;
+        #   bg = "NONE";
+        # };
+
+        Pmenu = {
+          bg = "NONE";
+          fg = base01;
+        };
+
+        PmenuSel = {
+          bg = "NONE";
+          fg = base01;
+        };
+
+        #
+        # TelescopePromptNormal = {
+        #   bg = base00;
+        #   fg = base06;
+        # };
+        #
+        # TelescopePromptPrefix = {
+        #   fg = base0D;
+        #   bg = "NONE";
+        #   bold = true;
+        # };
+        #
+        # TelescopePromptCounter = {
+        #   fg = base0E;
+        #   bg = "NONE";
+        #   bold = true;
+        # };
+        #
+        # TelescopePromptTitle = {
+        #   fg = base0B;
+        #   bg = "NONE";
+        #   bold = true;
+        # };
+        #
+        # TelescopePromptBorder = {
+        #   bg = "NONE";
+        #   fg = base06;
+        # };
+        #
+        # TelescopeResultsNormal = {
+        #   bg = "NONE";
+        #   fg = base06;
+        # };
+        #
+        # TelescopeResultsTitle = {
+        #   fg = base0C;
+        #   bg = "NONE";
+        #   bold = true;
+        # };
+        #
+        # TelescopeResultsBorder = {
+        #   bg = "NONE";
+        #   fg = base06;
+        # };
+        #
+        # TelescopePreviewNormal = {
+        #   bg = "NONE";
+        #   fg = base06;
+        # };
+        #
+        # TelescopePreviewTitle = {
+        #   fg = base0B;
+        #   bg = "NONE";
+        #   bold = true;
+        # };
+
+        LspInlayHint = {
+          fg = base0C;
+          bg = "NONE";
+          bold = true;
+          blend = 95;
+        };
+
+        VirtText = {
+          bg = "NONE";
+          fg = base03;
+          bold = true;
+        };
+
+        LspReferenceText = {
+          fg = base03;
+          bg = "NONE";
+        };
+
+        # TelescopeNormal = {
+        #   bg = base00;
+        #   fg = base04;
+        # };
+
+        TelescopePreviewBorder = {
+          bg = "NONE";
+          fg = base06;
+        };
+
+        # TelescopeResults = {
+        #   bg = "NONE";
+        #   fg = base06;
+        # };
+
+        TelescopeBorder = {
+          bg = "NONE";
+          fg = base06;
+        };
+
+        DiagnosticWarn.link = "DiagnosticVirtualTextWarn";
+        DiagnosticInfo.link = "DiagnosticVirtualTextInfo";
+        DiagnosticHint.link = "DiagnosticVirtualTextHint";
+        DiagnosticOk.link = "DiagnosticVirtualTextOk";
+        DiagnosticError.link = "DiagnosticVirtualTextError";
+
+        DiagnosticVirtualTextError = {
+          fg = base0F;
+          bg = "NONE";
+        };
+
+        DiagnosticVirtualTextWarn = {
+          fg = base0A;
+          bg = "NONE";
+        };
+
+        DiagnosticVirtualTextInfo = {
+          fg = base0C;
+          bg = "NONE";
+        };
+
+        DiagnosticVirtualTextHint = {
+          fg = base0C;
+          bg = "NONE";
+        };
+
+        DiagnosticVirtualTextOk = {
+          fg = base0D;
+          bg = "NONE";
+        };
+
+        DiagnosticUnnecessary = {
+          fg = virtual.warn.fg;
+          bg = "NONE";
+        };
+
+        RainbowDelimiterRed.fg = base08;
+        RainbowDelimiterRed.bg = "NONE";
+        RainbowDelimiterYellow.fg = base0A;
+        RainbowDelimiterYellow.bg = "NONE";
+        RainbowDelimiterBlue.fg = base0D;
+        RainbowDelimiterBlue.bg = "NONE";
+        RainbowDelimiterOrange.fg = base09;
+        RainbowDelimiterOrange.bg = "NONE";
+        RainbowDelimiterGreen.fg = base0B;
+        RainbowDelimiterGreen.bg = "NONE";
+        RainbowDelimiterViolet.fg = base0E;
+        RainbowDelimiterViolet.bg = "NONE";
+        RainbowDelimiterCyan.fg = base0C;
+        RainbowDelimiterCyan.bg = "NONE";
+      };
+
+    # extraConfigLuaPost = ''
+    #   vim.api.nvim_create_autocmd("ColorScheme", {
+    #     pattern = "kanagawa",
+    #     callback = function()
+    #       if vim.o.background == "light" then
+    #         vim.fn.system("kitty +kitten themes Kanagawa_light")
+    #       elseif vim.o.background == "dark" then
+    #         vim.fn.system("kitty +kitten themes Kanagawa_dragon")
+    #       else
+    #         vim.fn.system("kitty +kitten themes Kanagawa")
+    #       end
+    #     end,
+    #   })
+    # '';
 
     globals.mapleader = " ";
     filetype = {
@@ -185,7 +661,7 @@ in
           separate_save_and_remove = false;
           show_icons = true;
           window = {
-            border = "single";
+            border = "rounded";
             col = "auto";
             height = "auto";
             relative = "editor";
@@ -210,16 +686,16 @@ in
           position = "bottom";
         };
       };
-      bufferline = {
-        enable = false;
-        colorIcons = true;
-        closeIcon = " ";
-        leftTruncMarker = "<||";
-        maxNameLength = 30;
-        separatorStyle = "slant";
-        themable = true;
-        tabSize = 18;
-      };
+      # bufferline = {
+      #   enable = false;
+      #   colorIcons = true;
+      #   closeIcon = " ";
+      #   leftTruncMarker = "<||";
+      #   maxNameLength = 30;
+      #   separatorStyle = "slant";
+      #   themable = true;
+      #   tabSize = 18;
+      # };
       sniprun = {
         enable = true;
       };
@@ -297,7 +773,6 @@ in
           clue = { };
           colors = { };
           comment = { };
-          # completion = { };
           diff = { };
           doc = { };
           extra = { };
@@ -305,35 +780,58 @@ in
           fuzzy = { };
           cursorword = { };
           align = { };
-          animate = {
-            cursor = {
-              timing = helpers.mkRaw ''
-                require("mini.animate").gen_timing.cubic({ easing = "in-out", duration = 33, unit = 'total' })
-              '';
-              # path = helpers.mkRaw ''
-              #   require("mini.animate").gen_path.line({
-              #     predicate = function() return true end,
-              #   })
-              # '';
-            };
-            scroll = {
-              timing = helpers.mkRaw ''
-                require("mini.animate").gen_timing.cubic({
-                  easing = "in-out",
-                  duration = 33,
-                  unit = "total"
-                })
-              '';
-              # subscroll = helpers.mkRaw ''
-              #   require("mini.animate").gen_subscroll.equal({
-              #     max_output_steps = 30,
-              #     predicate = function()
-              #       return true 
-              #     end
-              #   })
-              # '';
-            };
-          };
+          animate =
+            {
+              cursor = {
+                timing = helpers.mkRaw ''
+                  require("mini.animate").gen_timing.cubic({ easing = "in-out", duration = 33, unit = 'total' })
+                '';
+                # path = helpers.mkRaw ''
+                #   require("mini.animate").gen_path.line({
+                #     predicate = function() return true end,
+                #   })
+                # '';
+              };
+              scroll = {
+                timing = helpers.mkRaw ''
+                  require("mini.animate").gen_timing.cubic({
+                    easing = "in-out",
+                    duration = 33,
+                    unit = "total"
+                  })
+                '';
+                # subscroll = helpers.mkRaw ''
+                #   require("mini.animate").gen_subscroll.equal({
+                #     max_output_steps = 30,
+                #     predicate = function()
+                #       return true 
+                #     end
+                #   })
+                # '';
+              };
+            }
+            // (mkIf (config.plugins.cmp.enable == false) {
+
+              completion = {
+                window = {
+                  info = {
+                    height = 25;
+                    width = 80;
+                    border = "rounded";
+                    zindex = 300;
+                    style = "minimal";
+                  };
+                  signature = {
+                    height = 25;
+                    width = 80;
+                    border = "rounded";
+                    zindex = 300;
+                    style = "minimal";
+                  };
+                };
+                set_vim_settings = true;
+              };
+            });
           indentscope = { };
           git = { };
           bufremove = { }; # Remove buffer from buffer list 	README 	Help file
