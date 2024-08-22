@@ -4,6 +4,16 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/master";
 
+    zig-master = {
+      url = "/home/jules/000_dev/000_nix/nix-zig-compiler";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    zls-master = {
+      url = "/home/jules/000_dev/010_zig/010_oss-projects/zls";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     nixvim.url = "github:nix-community/nixvim";
     flake-parts.url = "github:hercules-ci/flake-parts";
 
@@ -39,6 +49,8 @@
             overlays = [
               neovim-nightly.overlays.default
               (final: prev: { neovim-unwrapped = prev.neovim; })
+              (final: prev: { zig = inputs.zig-master.packages.${system}.zigPrebuilt; })
+              (final: prev: { zls = inputs.zls-master.packages.${system}.zls; })
             ];
           };
 

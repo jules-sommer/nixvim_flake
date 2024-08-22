@@ -203,7 +203,7 @@ in
         }
         {
           key = "gD";
-          action = "vim.lsp.buf.declaration";
+          action = helpers.mkRaw "vim.lsp.buf.declaration";
           options = {
             desc = "Jump to declaration";
             buffer = true;
@@ -211,7 +211,7 @@ in
         }
         {
           key = "gi";
-          action = "vim.lsp.buf.implementation";
+          action = helpers.mkRaw "vim.lsp.buf.implementation";
           options = {
             desc = "Lists all the implementations for the symbol under the cursor";
             buffer = true;
@@ -219,7 +219,7 @@ in
         }
         {
           key = "go";
-          action = "vim.lsp.buf.type_definition";
+          action = helpers.mkRaw "vim.lsp.buf.type_definition";
           options = {
             desc = "Jumps to the definition of the type symbol";
             buffer = true;
@@ -227,7 +227,7 @@ in
         }
         {
           key = "gr";
-          action = "vim.lsp.buf.references";
+          action = helpers.mkRaw "vim.lsp.buf.references";
           options = {
             desc = "Lists all the references";
             buffer = true;
@@ -235,7 +235,7 @@ in
         }
         {
           key = "gs";
-          action = "vim.lsp.buf.signature_help";
+          action = helpers.mkRaw "vim.lsp.buf.signature_help";
           options = {
             desc = "Displays a function's signature information";
             buffer = true;
@@ -243,7 +243,7 @@ in
         }
         {
           key = "<F2>";
-          action = "vim.lsp.buf.rename";
+          action = helpers.mkRaw "vim.lsp.buf.rename";
           options = {
             desc = "Renames all references to the symbol under the cursor";
             buffer = true;
@@ -251,7 +251,7 @@ in
         }
         {
           key = "<F4>";
-          action = "vim.lsp.buf.code_action";
+          action = helpers.mkRaw "vim.lsp.buf.code_action";
           options = {
             desc = "Selects a code action available at the current cursor position";
             buffer = true;
@@ -259,7 +259,7 @@ in
         }
         {
           key = "gl";
-          action = "vim.diagnostic.open_float";
+          action = helpers.mkRaw "vim.diagnostic.open_float";
           options = {
             desc = "Show diagnostics in a floating window";
             buffer = true;
