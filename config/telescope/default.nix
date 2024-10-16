@@ -5,7 +5,7 @@
   ...
 }:
 let
-  inherit (lib) mkEnableOption mkIf enabled;
+  inherit (lib) mkIf enabled;
   cfg = config.plugins.telescope;
 in
 {
@@ -18,7 +18,7 @@ in
               find_command = [
                 "rg"
                 "--files"
-                "--hidden"
+                # "--hidden"
                 "--glob"
                 "!**/.git/*"
               ];
@@ -51,15 +51,12 @@ in
                 "*/tmp/*"
                 "*/.cache/*"
                 "*/.zig-cache/*"
+                ".zig-cache/*"
+                ".*"
                 "*/.*"
               ];
               show_scores = true;
               show_unindexed = true;
-              workspaces = {
-                dev = "~/000_dev";
-                config = "~/000_dev/000_config/010_minimal-hyprland-flake";
-                vault = "~/010_documents";
-              };
             };
           };
           fzf-native = enabled;

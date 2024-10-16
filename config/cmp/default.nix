@@ -15,6 +15,10 @@ let
   cfgLocal = config.xeta.cmp;
 in
 {
+  imports = [
+    ./keymaps.nix
+  ];
+
   options.xeta.cmp = {
     sources = {
       path = mkOpt (types.enum [
@@ -23,12 +27,15 @@ in
       ]) "default" "Which source to use for cmp path completion";
     };
   };
+
   config = mkIf cfg.enable {
     plugins = {
       cmp-treesitter = {
         enable = lib.mkDefault helpers.enableExceptInTests;
       };
       cmp_yanky = enabled;
+      cmp-nvim-lsp = enabled;
+      cmp-nvim-lua = enabled;
 
       cmp-cmdline = enabled;
       cmp-nvim-lsp-document-symbol = enabled;
@@ -73,7 +80,7 @@ in
             };
           };
 
-          asyncPathEnabled = cfgLocal.sources.path == "async";
+          asyncPathEnabled = config.xeta.cmp.sources.path == "async";
         in
         {
           settings = {
@@ -98,21 +105,13 @@ in
                 "require('cmp.config.compare').score"
                 "require('cmp.config.compare').length"
                 "require('cmp.config.compare').order"
-                # default cmp.config.compare
-                # "require('cmp.config.compare').offset"
-                # "require('cmp.config.compare').exact"
-                # "require('cmp.config.compare').score"
-                # "require('cmp.config.compare').recently_used"
-                # "require('cmp.config.compare').locality"
-                # "require('cmp.config.compare').kind"
-                # "require('cmp.config.compare').length"
-                # "require('cmp.config.compare').order"
               ];
             };
 
             snippet.expand = ''
               function(args)
-                require('luasnip').lsp_expand(args.body)
+                -- You need Neovim v0.10 to use vim.snippet
+                vim.snippet.expand(args.body)
               end
             '';
 
@@ -137,74 +136,19 @@ in
                 name = "treesitter";
                 keyword_length = 0;
               }
-              (mkIf asyncPathEnabled {
-                name = "async_path";
-                keyword_length = 2;
-              })
-              (mkIf (asyncPathEnabled == false) {
-                name = "path";
-                keyword_length = 2;
-              })
               {
                 name = "luasnip";
-                keywordLength = 3;
+                keywordLength = 1;
               }
+              (mkIf asyncPathEnabled {
+                name = "async_path";
+                keyword_length = 1;
+              })
+              (mkIf (!asyncPathEnabled) {
+                name = "path";
+                keyword_length = 1;
+              })
             ];
-
-            mapping = {
-              "<C-b>" = "cmp.mapping.scroll_docs(-4)";
-              "<C-f>" = "cmp.mapping.scroll_docs(4)";
-              "<C-Space>" = "cmp.mapping.complete()";
-              "<C-c>" = "cmp.mapping.abort()";
-
-              "<CR>" = ''
-                cmp.mapping.confirm({
-                  behavior = cmp.ConfirmBehavior.Replace,
-                  select = true,
-                })
-              '';
-
-              "<Tab>" = ''
-                cmp.mapping(function(fallback)
-                  if cmp.visible() then
-                    cmp.select_next_item()
-                  else
-                    fallback()
-                  end 
-                end, {'i', 's'})
-              '';
-
-              "<S-Tab>" = ''
-                cmp.mapping(function(fallback)
-                  if cmp.visible() then
-                    cmp.select_prev_item()
-                  else
-                    fallback()
-                  end
-                end, {'i', 's'})
-              '';
-
-              "<Esc>" = ''
-                cmp.mapping(function(fallback)
-                  local sm = require('supermaven-nvim.completion_preview')
-
-                  if cmp.visible() then
-                    cmp.abort()
-                  end
-
-                  if sm ~= nil and sm.inlay_instance ~= nil then
-                    sm.on_dispose_inlay()
-                  end
-
-                  fallback()
-                end, {'i', 's'})
-              '';
-
-              "<C-p>" = "cmp.mapping.select_prev_item()";
-              "<C-n>" = "cmp.mapping.select_next_item()";
-              "<Up>" = "cmp.mapping.select_prev_item()";
-              "<Down>" = "cmp.mapping.select_next_item()";
-            };
 
           };
 
@@ -223,8 +167,8 @@ in
               inherit window view;
               mapping = helpers.mkRaw "cmp.mapping.preset.cmdline()";
               sources = [
-                (mkIf (asyncPathEnabled == true) { name = "async_path"; })
-                (mkIf (asyncPathEnabled == false) { name = "path"; })
+                (mkIf asyncPathEnabled { name = "async_path"; })
+                (mkIf (!asyncPathEnabled) { name = "path"; })
                 {
                   name = "cmdline";
                   option = {

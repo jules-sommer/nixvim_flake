@@ -11,47 +11,27 @@ let
 in
 {
   config = mkIf cfg.enable {
+
+    extraConfigLua = ''
+      function DismissAllNotif(state)
+        local silent, pending = state.silent, state.pending
+        require("notify").dismiss({ silent = silent, pending = pending })
+        vim.cmd("Noice dismiss")
+      end
+    '';
+
     keymaps = [
       {
-        key = "<leader>ds";
-        action = "<cmd>Noice dismiss<CR>";
+        key = "<leader>un";
+        action = "<cmd>lua DismissAllNotif({ true, true })<CR>";
         options = {
           desc = "Dismiss all popups via Noice";
           silent = true;
         };
       }
-      # vim.keymap.set({ "n", "i", "s" }, "<c-f>", function()
-      #   if not require("noice.lsp").scroll(4) then
-      #     return "<c-f>"
-      #   end
-      # end, { silent = true, expr = true })
-
-      {
-        key = "<C-f>";
-        action = helpers.mkRaw ''
-          require("noice.lsp").scroll(4) then return "<C-f>" end
-        '';
-        options.silent = true;
-        options.expr = true;
-      }
-
-      {
-        key = "<C-b>";
-        action = helpers.mkRaw ''
-          require("noice.lsp").scroll(-4) then return "<C-b>" end
-        '';
-        options.silent = true;
-        options.expr = true;
-      }
-
-      # vim.keymap.set({ "n", "i", "s" }, "<c-b>", function()
-      #   if not require("noice.lsp").scroll(-4) then
-      #     return "<c-b>"
-      #   end
-      # end, { silent = true, expr = true })
     ];
 
-    extraPlugins = [ plugins.fzf-lua ];
+    # extraPlugins = [ plugins.fzf-lua ];
 
     plugins.noice = {
       cmdline = {
@@ -125,7 +105,7 @@ in
         };
       };
       presets = {
-        bottom_search = true;
+        bottom_search = false;
         command_palette = true;
         long_message_to_split = true;
         inc_rename = true;
@@ -138,14 +118,14 @@ in
 
       popupmenu = {
         enabled = true;
-        backend = "cmp";
+        backend = "nui";
         kindIcons = true;
       };
       lsp = {
         override = {
+          "cmp.entry.get_documentation" = true;
           "vim.lsp.util.convert_input_to_markdown_lines" = true;
           "vim.lsp.util.stylize_markdown" = true;
-          "cmp.entry.get_documentation" = true;
         };
         documentation = {
           opts = {

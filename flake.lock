@@ -626,6 +626,7 @@
         "neovim-nightly": "neovim-nightly",
         "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim",
+        "tokyonight-nvim": "tokyonight-nvim",
         "zig-master": "zig-master",
         "zls-master": "zls-master"
       }
@@ -703,6 +704,19 @@
         "owner": "nix-systems",
         "repo": "default",
         "type": "github"
+      }
+    },
+    "tokyonight-nvim": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1724612501,
+        "narHash": "sha256-qSssGkVMli7bTk99MD0YOiBkYMXm6HzyVrHd2yaJuUQ=",
+        "path": "/home/jules/000_dev/030_lua/tokyo-neon-night",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/jules/000_dev/030_lua/tokyo-neon-night",
+        "type": "path"
       }
     },
     "treefmt-nix": {
@@ -807,11 +821,11 @@
         "lastModified": 1724267712,
         "narHash": "sha256-bHoYnHZVOxqzoTzNFP6+fsaY0pEHMU7Dmb7Y8DsQ0Ss=",
         "type": "git",
-        "url": "file:///home/jules/000_dev/010_zig/010_oss-projects/zls"
+        "url": "file:///home/jules/000_dev/010_zig/010_repos/zls"
       },
       "original": {
         "type": "git",
-        "url": "file:///home/jules/000_dev/010_zig/010_oss-projects/zls"
+        "url": "file:///home/jules/000_dev/010_zig/010_repos/zls"
       }
     }
   },

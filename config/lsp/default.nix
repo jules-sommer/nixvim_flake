@@ -3,6 +3,7 @@
   pkgs,
   lib,
   helpers,
+  zls-master,
   ...
 }:
 let
@@ -17,50 +18,24 @@ let
   incRenameEnabled = config.plugins.inc-rename.enable;
 in
 {
+  imports = [
+    ./none-ls
+    ./rustacean-nvim
+  ];
+
   options.lsp = {
     enable = mkEnableOption "Enable LSP configuration.";
   };
 
   config = mkIf cfg.enable {
     plugins = {
-      luasnip = enabled;
-      improved-search = enabled;
-      indent-o-matic = enabled;
-      nvim-colorizer = enabled;
-      inc-rename = enabled;
-      zig = enabled;
-      rustaceanvim = enabled;
-      none-ls = {
+      trouble = {
         enable = true;
-        sources = {
-          formatting = {
-            nixfmt = {
-              enable = true;
-              package = pkgs.nixfmt-rfc-style;
-            };
-            ocamlformat = {
-              enable = true;
-              package = pkgs.ocamlformat;
-            };
-            htmlbeautifier = enabled;
-            markdownlint = enabled;
-            gofmt = {
-              enable = true;
-              package = pkgs.gopls;
-            };
-          };
+        settings = {
+          auto_close = true;
+          position = "right";
         };
       };
-
-      nvim-autopairs = enabled;
-      comment = enabled;
-      nix = enabled;
-      crates-nvim = enabled;
-      direnv = enabled;
-      lsp-lines = enabled;
-      lsp-format = enabled;
-      nix-develop = enabled;
-
       lsp = {
         enable = true;
         servers = {
@@ -73,16 +48,24 @@ in
           nushell = enabled;
           tsserver = enabled;
           htmx = enabled;
-          zls = enabled;
+          zls = {
+            enable = true;
+            package = zls-master.packages.${pkgs.system}.zls;
+            settings = {
+              enable_build_on_save = true;
+              # woiwjdqqwiodjqiowjdioqjwdd
+              # qiwjdoqiwjd
+              enable_autofix = true;
+              build_on_save_step = "check";
+              build_runner_path = "/home/jules/000_dev/010_zig/010_repos/zls/src/build_runner/0.12.0.zig";
+              warn_style = true;
+              highlight_global_var_declarations = true;
+            };
+          };
           rnix-lsp = disabled;
-          nixd = disabled;
+          nixd = enabled;
           nil-ls = enabled;
           bashls = enabled;
-          # rust-analyzer = {
-          #   enable = true;
-          #   installRustc = false;
-          #   installCargo = false;
-          # };
           html = enabled;
           ccls = enabled;
           cmake = enabled;
@@ -93,42 +76,142 @@ in
           tailwindcss = enabled;
         };
       };
+
+      luasnip = enabled;
+      improved-search = enabled;
+      indent-o-matic = enabled;
+      nvim-colorizer = enabled;
+      inc-rename = enabled;
+      zig = enabled;
+      nvim-autopairs = enabled;
+      comment = enabled;
+      nix = enabled;
+      crates-nvim = enabled;
+      direnv = enabled;
+      lsp-lines = enabled;
+      lsp-format = enabled;
+      nix-develop = enabled;
+    };
+
+    extraConfigLuaPost = ''
+      -- Add additional capabilities supported by nvim-cmp
+      local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+      local lspconfig = require('lspconfig')
+
+      -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
+      local servers = { 'clangd', 'pyright', 'tsserver' }
+      for _, lsp in ipairs(servers) do
+        lspconfig[lsp].setup {
+          -- on_attach = my_custom_on_attach,
+          capabilities = capabilities,
+        }
+      end
+    '';
+
+    extraFiles = {
+      "lua/code_action_utils.lua" = {
+        enable = true;
+        text = ''
+          local M = {}
+
+          local lsp_util = vim.lsp.util
+
+          M.ignore_patterns = {
+            "startify",
+            "dashboard",
+            "lazygit",
+            "neogitstatus",
+            "NvimTree",
+            "Outline",
+            "spectre_panel",
+            "toggleterm",
+            "Trouble",
+            "startup",
+            "help",
+            "mason",
+            "lazy",
+          }
+
+          function M.ignore_buf_patterns(callback, patterns)
+            local current_buffer_name = vim.api.nvim_buf_get_name(0)
+            for _, pattern in ipairs(patterns) do
+              if current_buffer_name:match(pattern) then
+                if callback then
+                  callback()
+                else 
+                  return 
+                end
+              end
+            end
+          end
+
+          function M.code_action_listener()
+            local context = { diagnostics = vim.diagnostic.get() }
+            local params = lsp_util.make_range_params()
+            params.context = context
+            vim.lsp.buf_request(0, 'textDocument/codeAction', params, function(err, result, ctx, config)
+              -- do something with result - e.g. check if empty and show some indication such as a sign
+              -- show sign in column
+              vim.notify(vim.inspect(result), vim.inspect(ctx), vim.inspect(config))
+            end)
+          end
+
+          return M
+        '';
+      };
     };
 
     autoGroups = {
       UserLspConfig = {
         clear = true;
       };
+      CodeActionSign = {
+        clear = true;
+      };
     };
 
+    # vim.api.nvim_create_autocmd({"CursorHold", "CursorHoldI"}, {
+    #   group = vim.api.nvim_create_augroup("code_action_sign", { clear = true }),
+    #   callback = function()
+    #     require('code_action_utils').code_action_listener()
+    #   end,
+    # })
     autoCmd = [
+      {
+        event = [
+          "CursorHold"
+          "CursorHoldI"
+        ];
+        group = "CodeActionSign";
+        callback = helpers.mkRaw ''
+          function()
+            local M = require('code_action_utils')
+
+            M.ignore_buf_patterns(
+              function()
+                require('code_action_utils').code_action_listener()
+              end,
+              M.ignore_patterns
+            )
+          end
+        '';
+      }
       {
         event = "LspAttach";
         group = "UserLspConfig";
-        callback = {
-          __raw = ''
-            function(args)
-              local client = vim.lsp.get_client_by_id(args.data.client_id)
-              if client.server_capabilities.inlayHintProvider then
-                vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
-              end
+        callback = helpers.mkRaw ''
+          function(args)
+            local client = vim.lsp.get_client_by_id(args.data.client_id)
+            if client.server_capabilities.inlayHintProvider then
+              vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
             end
-          '';
-        };
+          end
+        '';
       }
     ];
 
     keymapsOnEvents = {
-      InsertEnter = [
-        {
-          action = helpers.mkRaw ''require("cmp").mapping.confirm()'';
-          key = "<C-y>";
-        }
-        {
-          action = helpers.mkRaw ''require("cmp").mapping.select_next_item()'';
-          key = "<C-n>";
-        }
-      ];
       LspAttach = [
         {
           key = "<leader>l";
@@ -152,7 +235,7 @@ in
             desc = "See available code actions";
           };
         }
-        (mkIf (incRenameEnabled) {
+        (mkIf incRenameEnabled {
           key = "<leader>rn";
           action = helpers.mkRaw "vim.lsp.buf.rename";
           options = {
@@ -268,6 +351,85 @@ in
       ];
     };
 
-    keymaps = [ ];
+    keymaps = [
+      {
+        key = "[q";
+        action = helpers.mkRaw ''
+          function()
+            if require("trouble").is_open() then
+              require("trouble").prev({ skip_groups = true, jump = true })
+            else
+              local ok, err = pcall(vim.cmd.cprev)
+              if not ok then
+                vim.notify(err, vim.log.levels.ERROR)
+              end
+            end
+          end
+        '';
+        options = {
+          desc = "Previous Trouble/Quickfix Item";
+        };
+      }
+      {
+        key = "]q";
+        action = helpers.mkRaw ''
+          function()
+            if require("trouble").is_open() then
+              require("trouble").next({ skip_groups = true, jump = true })
+            else
+              local ok, err = pcall(vim.cmd.cnext)
+              if not ok then
+                vim.notify(err, vim.log.levels.ERROR)
+              end
+            end
+          end
+        '';
+        options = {
+          desc = "Next Trouble/Quickfix Item";
+        };
+      }
+      {
+        key = "<leader>xx";
+        action = "<cmd>Trouble diagnostics toggle<cr>";
+        options = {
+          desc = "Diagnostics (Trouble)";
+        };
+      }
+      {
+        key = "<leader>xX";
+        action = "<cmd>Trouble diagnostics toggle filter.buf=0<cr>";
+        options = {
+          desc = "Buffer Diagnostics (Trouble)";
+        };
+      }
+      {
+        key = "<leader>cs";
+        action = "<cmd>Trouble symbols toggle<cr>";
+        options = {
+          desc = "Symbols (Trouble)";
+        };
+      }
+      {
+        key = "<leader>cS";
+        action = "<cmd>Trouble lsp toggle<cr>";
+        options = {
+          desc = "LSP references/definitions/... (Trouble)";
+        };
+      }
+      {
+        key = "<leader>xL";
+        action = "<cmd>Trouble loclist toggle<cr>";
+        options = {
+          desc = "Location List (Trouble)";
+        };
+      }
+      {
+        key = "<leader>xQ";
+        action = "<cmd>Trouble qflist toggle<cr>";
+        options = {
+          desc = "Quickfix List (Trouble)";
+        };
+      }
+    ];
   };
 }

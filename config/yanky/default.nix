@@ -1,22 +1,67 @@
 {
   config,
   lib,
-  theme,
+  helpers,
   ...
 }:
 let
-  inherit (lib) mkEnableOption mkIf enabled;
+  inherit (lib) mkIf enabled;
   cfg = config.plugins.yanky;
 in
 {
   config = mkIf cfg.enable {
-    keymaps = [ ];
+    keymaps = [
+      {
+        mode = [
+          "n"
+          "x"
+        ];
+        key = "p";
+        action = "<Plug>(YankyPutAfter)";
+      }
+      {
+        mode = [
+          "n"
+          "x"
+        ];
+        key = "P";
+        action = "<Plug>(YankyPutBefore)";
+      }
+      {
+        mode = [
+          "n"
+          "x"
+        ];
+        key = "gp";
+        action = "<Plug>(YankyGPutAfter)";
+      }
+      {
+        mode = [
+          "n"
+          "x"
+        ];
+        key = "gP";
+        action = "<Plug>(YankyGPutBefore)";
+      }
+      {
+        mode = [ "n" ];
+        key = "<c-p>";
+        action = "<Plug>(YankyPreviousEntry)";
+      }
+      {
+        mode = [ "n" ];
+        key = "<c-n>";
+        action = "<Plug>(YankyNextEntry)";
+      }
+    ];
+
     plugins.yanky = {
       enableTelescope = true;
       settings = {
         onPut = true;
         onYank = true;
         timer = 500;
+        useDefaultMappings = false;
         picker = {
           telescope = {
             enable = true;
@@ -39,13 +84,13 @@ in
         };
         preserveCursorPosition = true;
         ring = {
+          # TODO: move this back to sqlite storage once sqlite.lua works
+          # on neovim nightly + nixvim master
+          storage = "shada";
           cancelEvent = "update";
           historyLength = 100;
           ignoreRegisters = [ "_" ];
-          storage = "sqlite";
-          storagePath = ''
-            {__raw = "vim.fn.stdpath('data') .. '/databases/yanky.db'";}
-          '';
+          storagePath = helpers.mkRaw "vim.fn.stdpath('data') .. '/databases/yanky.db'";
           syncWithNumberedRegisters = true;
         };
         systemClipboard = {

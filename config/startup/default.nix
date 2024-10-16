@@ -2,11 +2,10 @@
   config,
   lib,
   helpers,
-  pkgs,
   ...
 }:
 let
-  inherit (lib) mkEnableOption mkIf;
+  inherit (lib) mkIf;
   cfg = config.plugins.startup;
 in
 {
@@ -105,3 +104,27 @@ in
     };
   };
 }
+
+# window_id
+# open_sections
+# sections
+# section_highlights
+# mapping_names
+# good_lines
+# open_section
+# open_file
+# create_mappings
+# user_mappings
+# buffer_nr
+# redraw
+# align
+# display
+# setup
+# remove_buffer
+# open_file_vsplit
+# check_line
+# new_file
+# settings
+# lines
+# commands
+# formatted_text

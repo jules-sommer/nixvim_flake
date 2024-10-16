@@ -10,8 +10,13 @@
     };
 
     zls-master = {
-      url = "/home/jules/000_dev/010_zig/010_oss-projects/zls";
+      url = "/home/jules/000_dev/010_zig/010_repos/zls";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    tokyonight-nvim = {
+      url = "/home/jules/000_dev/030_lua/tokyo-neon-night";
+      flake = false;
     };
 
     nixvim.url = "github:nix-community/nixvim";
@@ -31,6 +36,8 @@
       base24-themes,
       neovim-nightly,
       flake-parts,
+      zls-master,
+      zig-master,
       ...
     }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -48,9 +55,11 @@
             inherit system;
             overlays = [
               neovim-nightly.overlays.default
-              (final: prev: { neovim-unwrapped = prev.neovim; })
-              (final: prev: { zig = inputs.zig-master.packages.${system}.zigPrebuilt; })
-              (final: prev: { zls = inputs.zls-master.packages.${system}.zls; })
+              (final: prev: {
+                zig = zig-master.packages.${system}.zigPrebuilt;
+                zls = zls-master.packages.${system}.zls;
+                neovim-unwrapped = prev.neovim;
+              })
             ];
           };
 
@@ -81,6 +90,8 @@
             extraSpecialArgs = {
               inherit
                 lib
+                zls-master
+                zig-master
                 pkgs
                 theme
                 plugins
