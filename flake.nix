@@ -2,16 +2,17 @@
   description = "Xeta nixvim configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/master";
+    master.url = "github:nixos/nixpkgs/master";
+    unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
     zig-master = {
       url = "/home/jules/000_dev/000_nix/nix-zig-compiler";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "master";
     };
 
     zls-master = {
       url = "/home/jules/000_dev/010_zig/010_repos/zls";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "master";
     };
 
     tokyonight-nvim = {
@@ -25,14 +26,15 @@
     base24-themes.url = "github:jules-sommer/nix_b24_themes";
     neovim-nightly = {
       url = "github:nix-community/neovim-nightly-overlay";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "master";
     };
   };
 
   outputs =
     {
       nixvim,
-      nixpkgs,
+      master,
+      unstable,
       base24-themes,
       neovim-nightly,
       flake-parts,
@@ -51,31 +53,39 @@
       perSystem =
         { system, ... }:
         let
-          pkgs = import inputs.nixpkgs {
-            inherit system;
-            overlays = [
-              neovim-nightly.overlays.default
-              (final: prev: {
-                zig = zig-master.packages.${system}.zigPrebuilt;
-                zls = zls-master.packages.${system}.zls;
-                neovim-unwrapped = prev.neovim;
-              })
-            ];
+          overlays = [
+            neovim-nightly.overlays.default
+            (_: prev: {
+              inherit (zls-master.packages.${system}) zls;
+              zig = zig-master.packages.${system}.zigPrebuilt;
+              neovim-unwrapped = prev.neovim;
+            })
+          ];
+
+          channels =
+            let
+              mkChannel = input: rec {
+                inherit (pkgs) lib;
+                pkgs = import input {
+                  inherit
+                    system
+                    overlays
+                    ;
+
+                };
+              };
+            in
+            {
+              unstable = mkChannel unstable;
+              master = mkChannel master;
+            };
+
+          pkgs = import master {
+            inherit system overlays;
           };
 
-          lib =
-            import ./lib { inherit (pkgs) lib; }
-            // pkgs.lib
-            // {
-              nixvim =
-                nixvimLib
-                // pkgs.lib
-                # TODO: this is a hack because we're tracking the master branch and it
-                # seems like they're migrating the location of these helpers as per this
-                # [commit](https://github.com/nix-community/nixvim/commit/96d0a2e390128be2ea19b714d4215326abfadf83)
-                # and others. Remove this once all plugins build again without this shim.
-                // nixvimLib.helpers;
-            };
+          # Merges the local library functions with that of the nixvimLib extendedLib (a version of nixpkgs lib with nixvim lib helpers merged in)
+          lib = nixvimLib.helpers.extendedLib // (import ./lib { inherit (pkgs) lib; });
 
           local_plugins = import ./packages/default.nix { inherit pkgs lib; };
 
@@ -95,6 +105,7 @@
                 pkgs
                 theme
                 plugins
+                channels
                 ;
             };
           };
@@ -103,7 +114,7 @@
         assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? nixvim;
         {
           _module.args = {
-            inherit pkgs;
+            inherit pkgs channels;
           };
 
           checks = {
@@ -114,13 +125,16 @@
           packages = {
             # Lets you run `nix run .` to start nixvim
             default = nvim;
+            inherit nixvimLib;
             inherit (local_plugins)
-              supermaven-nvim
               treesitter-nu
               vim-smartword
               satellite-nvim
               ;
           };
         };
+    }
+    // {
+
     };
 }
