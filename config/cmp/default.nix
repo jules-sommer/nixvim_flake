@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   lib,
   helpers,
   ...
@@ -32,6 +33,9 @@ in
     plugins = {
       cmp-treesitter = {
         enable = lib.mkDefault helpers.enableExceptInTests;
+      };
+      cmp-fish = {
+        enable = true;
       };
       cmp_yanky = enabled;
       cmp-nvim-lsp = enabled;

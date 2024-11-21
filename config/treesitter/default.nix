@@ -1,5 +1,6 @@
 {
   config,
+  pkgs,
   lib,
   ...
 }:
@@ -10,14 +11,33 @@ in
 {
   config = mkIf cfg.enable {
     plugins.treesitter = {
+      # vim, regex, lua, bash, markdown, markdown_inline
       nixGrammars = true;
       nixvimInjections = true;
+
+      grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
+        bash
+        json
+        lua
+        make
+        markdown
+        nix
+        regex
+        toml
+        vim
+        vimdoc
+        xml
+        yaml
+      ];
+
       settings = {
+        auto_install = true;
         indent = {
           enable = true;
         };
       };
     };
+
     plugins.treesitter-textobjects = {
       enable = true;
       lspInterop = {

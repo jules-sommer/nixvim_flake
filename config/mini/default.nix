@@ -49,10 +49,10 @@ with lib;
               ;
           };
         };
-        basics = { };
-        bracketed = { };
-        clue = { };
-        colors = { };
+        # basics = { };
+        # bracketed = { };
+        # clue = { };
+        # colors = { };
         # comment = {
         #   mappings = {
         #     comment = "<leader>/";
@@ -66,12 +66,12 @@ with lib;
             style = "sign";
           };
         };
-        doc = { };
-        extra = { };
-        files = { };
-        fuzzy = { };
-        cursorword = { };
-        align = { };
+        # doc = { };
+        # extra = { };
+        # files = { };
+        # fuzzy = { };
+        # cursorword = { };
+        # align = { };
         animate =
           {
             cursor = {
@@ -129,10 +129,10 @@ with lib;
               set_vim_settings = true;
             };
           });
-        indentscope = { };
-        git = { };
-        bufremove = { }; # Remove buffer from buffer list 	README 	Help file
-        hipatterns = { }; # Highlight patterns in text 	README 	Help file
+        # indentscope = { };
+        # git = { };
+        # bufremove = { }; # Remove buffer from buffer list 	README 	Help file
+        # hipatterns = { }; # Highlight patterns in text 	README 	Help file
         icons = { }; # Icon provider 	README 	Help file
         indentscope = {
           # Draw options
@@ -156,15 +156,15 @@ with lib;
           };
           symbol = "│";
         };
-        map = { }; # Window with buffer text overview 	README 	Help file
-        misc = { }; # Miscellaneous functions 	README 	Help file
-        move = { }; # Move any selection in any direction 	README 	Help file
-        operators = { }; # Text edit operators 	README 	Help file
-        pairs = { }; # Autopairs 	README 	Help file
-        pick = { }; # Pick anything 	README 	Help file
-        sessions = { }; # Session management 	README 	Help file
-        splitjoin = { }; # Split and join arguments 	README 	Help file
-        statusline = { }; # Statusline 	README 	Help file
+        # map = { }; # Window with buffer text overview 	README 	Help file
+        # misc = { }; # Miscellaneous functions 	README 	Help file
+        # move = { }; # Move any selection in any direction 	README 	Help file
+        # operators = { }; # Text edit operators 	README 	Help file
+        # pairs = { }; # Autopairs 	README 	Help file
+        # pick = { }; # Pick anything 	README 	Help file
+        # sessions = { }; # Session management 	README 	Help file
+        # splitjoin = { }; # Split and join arguments 	README 	Help file
+        # statusline = { }; # Statusline 	README 	Help file
         surround = {
           mappings = {
             add = "gsa";
@@ -179,9 +179,9 @@ with lib;
         tabline = {
           show_icons = true;
         }; # Tabline 	README 	Help file
-        test = { }; # Test Neovim plugins 	README 	Help file
-        trailspace = { }; # Trailspace (highlight and remove) 	README 	Help file
-        visits = { };
+        # test = { }; # Test Neovim plugins 	README 	Help file
+        # trailspace = { }; # Trailspace (highlight and remove) 	README 	Help file
+        # visits = { };
       };
     };
   };

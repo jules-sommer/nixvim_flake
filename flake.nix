@@ -5,15 +5,8 @@
     master.url = "github:nixos/nixpkgs/master";
     unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    zig-master = {
-      url = "/home/jules/000_dev/000_nix/nix-zig-compiler";
-      inputs.nixpkgs.follows = "master";
-    };
-
-    zls-master = {
-      url = "/home/jules/000_dev/010_zig/010_repos/zls";
-      inputs.nixpkgs.follows = "master";
-    };
+    zig.url = "github:mitchellh/zig-overlay";
+    zls.url = "github:zigtools/zls";
 
     tokyonight-nvim = {
       url = "/home/jules/000_dev/030_lua/tokyo-neon-night";
@@ -38,8 +31,8 @@
       base24-themes,
       neovim-nightly,
       flake-parts,
-      zls-master,
-      zig-master,
+      zls,
+      zig,
       ...
     }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -56,8 +49,8 @@
           overlays = [
             neovim-nightly.overlays.default
             (_: prev: {
-              inherit (zls-master.packages.${system}) zls;
-              zig = zig-master.packages.${system}.zigPrebuilt;
+              inherit (zls.outputs.packages.${prev.system}) zls;
+              zig = zig.outputs.packages.master;
               neovim-unwrapped = prev.neovim;
             })
           ];
@@ -80,7 +73,7 @@
               master = mkChannel master;
             };
 
-          pkgs = import master {
+          pkgs = import unstable {
             inherit system overlays;
           };
 
@@ -100,8 +93,6 @@
             extraSpecialArgs = {
               inherit
                 lib
-                zls-master
-                zig-master
                 pkgs
                 theme
                 plugins
@@ -114,7 +105,7 @@
         assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? nixvim;
         {
           _module.args = {
-            inherit pkgs channels;
+            inherit pkgs channels plugins;
           };
 
           checks = {
@@ -130,6 +121,7 @@
               treesitter-nu
               vim-smartword
               satellite-nvim
+              noice
               ;
           };
         };

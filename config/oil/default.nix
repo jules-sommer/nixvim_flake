@@ -1,4 +1,9 @@
-{ config, lib, helpers, ... }:
+{
+  config,
+  lib,
+  helpers,
+  ...
+}:
 let
   inherit (lib) mkEnableOption mkIf;
   cfg = config.plugins.oil;
@@ -40,17 +45,18 @@ in
       settings = {
         constrain_cursor = "editable";
         default_file_explorer = true;
-        experimental_watch_for_changes = true;
+        experimental_watch_for_changes = false;
         skip_confirm_for_simple_edits = true;
+        delete_to_trash = false;
+        float = {
+          padding = 3;
+          border = "rounded";
+        };
 
         columns = [ "icon" ];
 
         view_options = {
           show_hidden = false;
-        };
-
-        float = {
-          border = "rounded";
         };
 
         keymaps = {
@@ -61,7 +67,9 @@ in
           "<C-t>" = "actions.select_tab";
           "<C-p>" = "actions.preview";
           "<C-c>" = "actions.close";
-          "<C-l>" = "actions.refresh";
+          "<C-l>" = false;
+          "<C-r>" = "actions.refresh";
+          "y." = "actions.copy_entry_path";
           "-" = "actions.parent";
           "_" = "actions.open_cwd";
           " " = "actions.cd";

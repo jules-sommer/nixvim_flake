@@ -60,7 +60,7 @@ with lib;
       mapleader = " ";
       maplocalleader = " ";
       have_nerd_font = true;
-      bigfile_size = 1024 * 1024 * 1.5; # 1.5 MB
+      bigfile_size = 1024 * 1024 * 3; # 3mb
     };
 
     filetype = {
@@ -175,6 +175,7 @@ with lib;
     };
 
     plugins = {
+      web-devicons = enabled;
       fugitive = enabled;
       git-conflict = {
         enable = true;
@@ -200,7 +201,7 @@ with lib;
       undotree = enabled;
       presence-nvim = enabled;
       multicursors = {
-        enable = true;
+        enable = false;
         createCommands = true;
         updatetime = 50;
         nowait = true;
@@ -355,12 +356,12 @@ with lib;
       plugins.nvim-lspconfig
       plugins.nvim-various-textobjs
       plugins.nvim-treesitter-textsubjects
-      # plugins.zoxide-vim
       plugins.satellite-nvim
+      plugins.noice
+      plugins.nui-nvim
       plugins.nvim-web-devicons # TODO: Figure out how to configure using this with telescope
       plugins.vim-wordmotion
       plugins.vim-smartword
-      # plugins.fzf-vim
       plugins.telescope-file-browser-nvim
     ];
   };

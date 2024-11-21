@@ -3,7 +3,6 @@
   pkgs,
   lib,
   helpers,
-  zls-master,
   ...
 }:
 let
@@ -29,43 +28,41 @@ in
 
   config = mkIf cfg.enable {
     plugins = {
-      trouble = {
-        enable = true;
-        settings = {
-          auto_close = true;
-          position = "right";
-        };
-      };
+      trouble = enabled;
       lsp = {
         enable = true;
         servers = {
-          lua-ls = {
+          lua_ls = {
             enable = true;
             settings = {
               telemetry = disabled;
             };
           };
-          nushell = enabled;
-          tsserver = enabled;
+          ts_ls = enabled;
           htmx = enabled;
           zls = {
             enable = true;
-            package = zls-master.packages.${pkgs.system}.zls;
+            package = pkgs.zls;
             settings = {
               enable_build_on_save = true;
-              # woiwjdqqwiodjqiowjdioqjwdd
-              # qiwjdoqiwjd
               enable_autofix = true;
               build_on_save_step = "check";
-              build_runner_path = "/home/jules/000_dev/010_zig/010_repos/zls/src/build_runner/0.12.0.zig";
+              # build_runner_path = "/home/jules/000_dev/010_zig/010_repos/zls/src/build_runner/0.12.0.zig";
               warn_style = true;
               highlight_global_var_declarations = true;
             };
           };
-          rnix-lsp = disabled;
           nixd = enabled;
-          nil-ls = enabled;
+          nil_ls = {
+            enable = true;
+            autostart = true;
+          };
           bashls = enabled;
+          fish_lsp = {
+            enable = true;
+            package = pkgs.fish-lsp;
+          };
+
           html = enabled;
           ccls = enabled;
           cmake = enabled;
@@ -94,18 +91,16 @@ in
     };
 
     extraConfigLuaPost = ''
-      -- Add additional capabilities supported by nvim-cmp
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
       local lspconfig = require('lspconfig')
 
-      -- Enable some language servers with the additional completion capabilities offered by nvim-cmp
-      local servers = { 'clangd', 'pyright', 'tsserver' }
+      local servers = { 'clangd', 'pyright', 'ts_ls' }
       for _, lsp in ipairs(servers) do
-        lspconfig[lsp].setup {
-          -- on_attach = my_custom_on_attach,
-          capabilities = capabilities,
-        }
+        if lspconfig[lsp] ~= nil then
+          lspconfig[lsp].setup {
+            capabilities = capabilities,
+          }
+        end
       end
     '';
 
@@ -151,8 +146,6 @@ in
             local params = lsp_util.make_range_params()
             params.context = context
             vim.lsp.buf_request(0, 'textDocument/codeAction', params, function(err, result, ctx, config)
-              -- do something with result - e.g. check if empty and show some indication such as a sign
-              -- show sign in column
               vim.notify(vim.inspect(result), vim.inspect(ctx), vim.inspect(config))
             end)
           end

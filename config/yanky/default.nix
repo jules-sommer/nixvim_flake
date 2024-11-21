@@ -65,21 +65,21 @@ in
         picker = {
           telescope = {
             enable = true;
-            mappings = {
-              default = "mapping.put('p')";
-              i = {
-                "<c-g>" = "mapping.put('p')";
-                "<c-k>" = "mapping.put('P')";
-                "<c-r>" = "mapping.set_register(utils.get_default_register())";
-                "<c-x>" = "mapping.delete()";
-              };
-              n = {
-                P = "mapping.put('P')";
-                d = "mapping.delete()";
-                p = "mapping.put('p')";
-                r = "mapping.set_register(utils.get_default_register())";
-              };
-            };
+            # mappings = {
+            #   default = "mapping.put('p')";
+            #   i = {
+            #     "<c-g>" = "mapping.put('p')";
+            #     "<c-k>" = "mapping.put('P')";
+            #     "<c-r>" = "mapping.set_register(utils.get_default_register())";
+            #     "<c-x>" = "mapping.delete()";
+            #   };
+            #   n = {
+            #     P = "mapping.put('P')";
+            #     d = "mapping.delete()";
+            #     p = "mapping.put('p')";
+            #     r = "mapping.set_register(utils.get_default_register())";
+            #   };
+            # };
           };
         };
         preserveCursorPosition = true;
