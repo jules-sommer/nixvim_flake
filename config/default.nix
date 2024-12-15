@@ -175,6 +175,24 @@ with lib;
     };
 
     plugins = {
+      render-markdown = {
+        enable = true;
+        settings = {
+          debounce = 100;
+          max_file_size = 20.0;
+          injections = {
+            gitcommit = {
+              enabled = true;
+              query = ''
+                ((message) @injection.content
+                    (#set! injection.combined)
+                    (#set! injection.include-children)
+                    (#set! injection.language "markdown"))
+              '';
+            };
+          };
+        };
+      };
       web-devicons = enabled;
       fugitive = enabled;
       git-conflict = {

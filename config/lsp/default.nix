@@ -62,7 +62,6 @@ in
             enable = true;
             package = pkgs.fish-lsp;
           };
-
           html = enabled;
           ccls = enabled;
           cmake = enabled;
@@ -77,7 +76,7 @@ in
       luasnip = enabled;
       improved-search = enabled;
       indent-o-matic = enabled;
-      nvim-colorizer = enabled;
+      colorizer = enabled;
       inc-rename = enabled;
       zig = enabled;
       nvim-autopairs = enabled;

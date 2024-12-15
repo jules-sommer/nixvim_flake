@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  plugins,
   helpers,
   ...
 }:
@@ -42,12 +43,14 @@ in
     ];
 
     plugins.oil = {
+      package = plugins.oil-nvim;
       settings = {
         constrain_cursor = "editable";
         default_file_explorer = true;
         experimental_watch_for_changes = false;
         skip_confirm_for_simple_edits = true;
-        delete_to_trash = false;
+        prompt_save_on_select_new_entry = true;
+        delete_to_trash = true;
         float = {
           padding = 3;
           border = "rounded";

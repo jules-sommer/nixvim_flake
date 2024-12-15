@@ -5,7 +5,6 @@
     master.url = "github:nixos/nixpkgs/master";
     unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    zig.url = "github:mitchellh/zig-overlay";
     zls.url = "github:zigtools/zls";
 
     tokyonight-nvim = {
@@ -32,7 +31,6 @@
       neovim-nightly,
       flake-parts,
       zls,
-      zig,
       ...
     }@inputs:
     flake-parts.lib.mkFlake { inherit inputs; } {
@@ -50,7 +48,6 @@
             neovim-nightly.overlays.default
             (_: prev: {
               inherit (zls.outputs.packages.${prev.system}) zls;
-              zig = zig.outputs.packages.master;
               neovim-unwrapped = prev.neovim;
             })
           ];
@@ -122,6 +119,7 @@
               vim-smartword
               satellite-nvim
               noice
+              oil-nvim
               ;
           };
         };

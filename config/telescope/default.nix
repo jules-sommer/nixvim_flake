@@ -59,9 +59,30 @@ in
               show_unindexed = true;
             };
           };
-          fzf-native = enabled;
-          media-files = enabled;
+          fzf-native = {
+            enable = true;
+            settings = {
+              case_mode = "smart_case";
+              fuzzy = true;
+              override_file_sorter = true;
+              override_generic_sorter = true;
+            };
+          };
+          media-files = {
+            enable = true;
+            settings = {
+              filetypes = [
+                "png"
+                "webp"
+                "jpg"
+                "jpeg"
+              ];
+              find_cmd = "rg";
+            };
+          };
           ui-select = enabled;
+          file-browser = enabled;
+          manix = enabled;
         };
         keymaps = { };
       };

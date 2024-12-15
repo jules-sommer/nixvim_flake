@@ -21,6 +21,8 @@ in
         lua
         make
         markdown
+        ziggy
+        ziggy_schema
         nix
         regex
         toml

@@ -80,7 +80,7 @@ in
               selection_order = "near_cursor";
             };
             docs = {
-              auto_open = true;
+              auto_open = false;
             };
           };
 
@@ -114,7 +114,6 @@ in
 
             snippet.expand = ''
               function(args)
-                -- You need Neovim v0.10 to use vim.snippet
                 vim.snippet.expand(args.body)
               end
             '';
