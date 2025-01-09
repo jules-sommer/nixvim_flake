@@ -24,6 +24,7 @@
 
   outputs =
     {
+      self,
       nixvim,
       master,
       unstable,
@@ -33,6 +34,9 @@
       zls,
       ...
     }@inputs:
+    let
+      inherit (inputs.unstable.legacyPackages.${"x86_64-linux"}.lib) composeManyExtensions;
+    in
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
@@ -123,8 +127,31 @@
               ;
           };
         };
+
+      flake = {
+        overlays = {
+          default = composeManyExtensions [
+            neovim-nightly.overlays.default
+            (_: prev: {
+              inherit (zls.outputs.packages.${prev.system}) zls;
+              neovim-unwrapped = prev.neovim;
+            })
+          ];
+        };
+      };
     }
     // {
-
+      nixosModules.default =
+        {
+          pkgs,
+          ...
+        }:
+        {
+          config = {
+            environment.systemPackages = [
+              self.packages.${pkgs.system}.default
+            ];
+          };
+        };
     };
 }

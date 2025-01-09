@@ -42,12 +42,13 @@ in
           htmx = enabled;
           zls = {
             enable = true;
+            autostart = true;
             package = pkgs.zls;
             settings = {
               enable_build_on_save = true;
               enable_autofix = true;
               build_on_save_step = "check";
-              # build_runner_path = "/home/jules/000_dev/010_zig/010_repos/zls/src/build_runner/0.12.0.zig";
+              build_runner_path = "${pkgs.zls.src}/src/build_runner/master.zig";
               warn_style = true;
               highlight_global_var_declarations = true;
             };
