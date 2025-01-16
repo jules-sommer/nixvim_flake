@@ -16,7 +16,7 @@ in
       nixGrammars = true;
       nixvimInjections = true;
       autoLoad = true;
-      folding = true;
+      folding = false;
 
       grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
         bash
