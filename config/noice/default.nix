@@ -34,7 +34,6 @@ in
     # extraPlugins = [ plugins.fzf-lua ];
 
     plugins.noice = {
-      package = plugins.noice;
       settings = {
         cmdline = {
           enabled = true;

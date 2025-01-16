@@ -50,7 +50,7 @@ with lib;
         ];
       };
       byteCompileLua = {
-        enable = true;
+        enable = false;
         nvimRuntime = true;
         plugins = true;
       };
@@ -126,7 +126,7 @@ with lib;
     };
 
     opts = {
-      background = "";
+      background = "dark";
       backup = false; # creates a backup file
       writebackup = false; # if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
       clipboard = "unnamedplus"; # allows neovim to access the system clipboard
@@ -138,8 +138,6 @@ with lib;
       ];
       conceallevel = 0; # so that `` is visible in markdown files
       fileencoding = "utf-8"; # the encoding written to a file
-      # foldmethod = "manual"; # folding, set to "expr" for treesitter based folding
-      foldexpr = ""; # set to "nvim_treesitter#foldexpr()" for treesitter based folding
       hidden = true; # required to keep multiple buffers and open multiple buffers
 
       hlsearch = true; # highlight all matches on previous search pattern
@@ -155,7 +153,6 @@ with lib;
       timeoutlen = 350; # time to wait for a mapped sequence to complete (in milliseconds)
       title = true; # set the title of window to the value of the titlestring
       titlestring = "%<%F%=%l/%L - xetavim"; # what the title of the window will be set to
-      # undodir = "/.local/share/nvim/undodir"; # set an undo directory
       undofile = true; # enable persistent undo
       updatetime = 50; # faster completion
       expandtab = true; # convert tabs to spaces
@@ -179,7 +176,6 @@ with lib;
       virtualedit = "block"; # allow cursor to move where there is no text in visual block mode:wildmode
       smoothscroll = true;
       foldmethod = "expr";
-      foldtext = "";
       linebreak = true; # Wrap lines at convenient points
       list = true; # Show some invisible characters (tabs...
       mouse = "a"; # Enable mouse mode
@@ -232,7 +228,6 @@ with lib;
       undotree = enabled;
       persistence = {
         enable = true;
-        saveEmpty = false;
       };
       indent-blankline = {
         enable = true;
@@ -334,8 +329,6 @@ with lib;
       plugins.nvim-various-textobjs
       plugins.nvim-treesitter-textsubjects
       plugins.satellite-nvim
-      plugins.noice
-      plugins.nui-nvim
       # plugins.nvim-web-devicons # TODO: Figure out how to configure using this with telescope
       plugins.vim-wordmotion
       plugins.vim-smartword

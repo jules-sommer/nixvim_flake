@@ -79,7 +79,8 @@
           };
 
           # Merges the local library functions with that of the nixvimLib extendedLib (a version of nixpkgs lib with nixvim lib helpers merged in)
-          lib = nixvimLib.helpers.extendedLib // (import ./lib { inherit (pkgs) lib; });
+          localFlakeLib = import ./lib { inherit (pkgs) lib; };
+          lib = (pkgs.lib.extend nixvim.lib.overlay).extend (_: _: localFlakeLib);
 
           local_plugins = import ./packages/default.nix { inherit pkgs lib; };
 
@@ -103,7 +104,6 @@
           };
           nvim = nixvim'.makeNixvimWithModule nixvimModule;
         in
-        assert builtins.isAttrs lib && lib ? enabled && lib ? disabled && lib ? nixvim;
         {
           _module.args = {
             inherit pkgs channels plugins;
@@ -119,11 +119,8 @@
             default = nvim;
             inherit nixvimLib;
             inherit (local_plugins)
-              treesitter-nu
               vim-smartword
               satellite-nvim
-              noice
-              oil-nvim
               ;
           };
         };

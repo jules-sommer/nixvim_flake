@@ -83,7 +83,7 @@ in
       nvim-autopairs = enabled;
       comment = disabled;
       nix = enabled;
-      crates-nvim = enabled;
+      crates = enabled;
       direnv = enabled;
       lsp-lines = enabled;
       lsp-format = enabled;

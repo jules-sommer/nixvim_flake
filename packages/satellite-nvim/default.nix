@@ -5,7 +5,7 @@
   src = pkgs.fetchFromGitHub {
     owner = "lewis6991";
     repo = "satellite.nvim";
-    rev = "777ed56";
+    rev = "bce591c";
     hash = "sha256-04Js+9SB4VuCq/ACbNh5BZcolu8i8vlGU72qo5xxfpk=";
   };
 })

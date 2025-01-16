@@ -43,7 +43,6 @@ in
     ];
 
     plugins.oil = {
-      package = plugins.oil-nvim;
       settings = {
         constrain_cursor = "editable";
         default_file_explorer = true;

@@ -9,8 +9,8 @@ buildVimPlugin {
   src = fetchFromGitHub {
     owner = "stevearc";
     repo = "oil.nvim";
-    rev = "dba037598843973b8c54bc5ce0318db4a0da439d";
-    sha256 = "06b0j6vrih5nh5hw52vc55pywzi01m57v2r6p52p783aqbpp22p9";
+    rev = "09fa1d2";
+    sha256 = "sha256-p8D5TKZuMWUW2/1OJ2a3isl/Fmwq3TZ6FpREyIzUImQ=";
     fetchSubmodules = true;
   };
   meta.homepage = "https://github.com/stevearc/oil.nvim/";
