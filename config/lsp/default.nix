@@ -28,7 +28,7 @@ in
 
   config = mkIf cfg.enable {
     plugins = {
-      trouble = enabled;
+      trouble = disabled;
       lsp = {
         enable = true;
         servers = {
@@ -53,7 +53,7 @@ in
               highlight_global_var_declarations = true;
             };
           };
-          nixd = enabled;
+          nixd = disabled;
           nil_ls = {
             enable = true;
             autostart = true;
@@ -81,7 +81,7 @@ in
       inc-rename = enabled;
       zig = enabled;
       nvim-autopairs = enabled;
-      comment = enabled;
+      comment = disabled;
       nix = enabled;
       crates-nvim = enabled;
       direnv = enabled;
@@ -164,12 +164,6 @@ in
       };
     };
 
-    # vim.api.nvim_create_autocmd({"CursorHold", "CursorHoldI"}, {
-    #   group = vim.api.nvim_create_augroup("code_action_sign", { clear = true }),
-    #   callback = function()
-    #     require('code_action_utils').code_action_listener()
-    #   end,
-    # })
     autoCmd = [
       {
         event = [

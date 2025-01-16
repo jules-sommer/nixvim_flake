@@ -42,6 +42,20 @@ with lib;
     };
     # vim.loader.enable
     luaLoader = enabled;
+    performance = {
+      combinePlugins = {
+        enable = true;
+        standalonePlugins = [
+          "nvim-treesitter"
+        ];
+      };
+      byteCompileLua = {
+        enable = true;
+        nvimRuntime = true;
+        plugins = true;
+      };
+    };
+
     plugins = {
       oil = enabled;
       startup = enabled;
@@ -194,9 +208,9 @@ with lib;
         };
       };
       web-devicons = enabled;
-      fugitive = enabled;
+      fugitive = disabled;
       git-conflict = {
-        enable = true;
+        enable = false;
         settings = {
           default_commands = true;
           default_mappings = {
@@ -215,41 +229,7 @@ with lib;
           list_opener = "copen";
         };
       };
-      neo-tree = disabled;
       undotree = enabled;
-      presence-nvim = enabled;
-      multicursors = {
-        enable = false;
-        createCommands = true;
-        updatetime = 50;
-        nowait = true;
-        generateHints = {
-          normal = true;
-          insert = true;
-          extend = true;
-        };
-        hintConfig = {
-          type = "window";
-          position = "bottom";
-        };
-      };
-      # plugins.bufferline.'.
-      bufferline = {
-        enable = false;
-        settings.options = {
-          color_icons = true;
-          close_icons = false;
-          max_name_length = 35;
-          # separator_style = "";
-          left_trunc_marker = "<||";
-          themable = true;
-          tab_size = 18;
-        };
-      };
-      sniprun = {
-        enable = true;
-        package = pkgs.vimPlugins.sniprun;
-      };
       persistence = {
         enable = true;
         saveEmpty = false;
@@ -263,32 +243,14 @@ with lib;
               "quickfix"
             ];
             filetypes = [
-              "help"
-              "alpha"
-              "dashboard"
-              "neo-tree"
-              "Trouble"
               "startup"
-              "startify"
-              "dashboard"
-              "trouble"
-              "lazy"
-              "mason"
-              "notify"
-              "toggleterm"
-              "lazyterm"
-              "neo-tree-popup"
-              "lspinfo"
-              "TelescopePrompt"
-              "TelescopeResults"
-              "yaml"
             ];
           };
 
           # highlights for plugin set @ ./colorscheme/default.nix
           indent = {
-            char = "│";
-            tab_char = "│";
+            char = "┆";
+            tab_char = "┆";
           };
           scope = {
             show_end = false;
@@ -299,10 +261,11 @@ with lib;
       };
 
       sleuth = {
-        enable = true;
+        enable = false;
       };
 
-      # Highlight todo, notes, etc in comments
+      # TODO: qwjqwid
+      # INFO: Highlight todo, notes, etc in comments
       # https://nix-community.github.io/nixvim/plugins/todo-comments/index.html
       todo-comments = {
         enable = true;
@@ -311,7 +274,6 @@ with lib;
         };
       };
 
-      barbar = disabled;
       barbecue = enabled;
       rainbow-delimiters = {
         enable = helpers.enableExceptInTests;
@@ -334,13 +296,11 @@ with lib;
         ];
       };
 
-      better-escape = enabled;
-      neoscroll = disabled;
-      harpoon = enabled;
+      better-escape = disabled;
+      harpoon = disabled;
       ccc = disabled;
-      floaterm = enabled;
-      gitsigns = enabled;
-      # lualine = enabled;
+      floaterm = disabled;
+      gitsigns = disabled;
       notify = {
         enable = true;
         fps = 60;
@@ -363,11 +323,10 @@ with lib;
         '';
         backgroundColour = "NotifyBackground";
       };
-      lazygit = enabled;
+      lazygit = disabled;
       transparent = {
         enable = true;
       };
-      zellij = disabled;
     };
 
     extraPlugins = [
@@ -377,7 +336,7 @@ with lib;
       plugins.satellite-nvim
       plugins.noice
       plugins.nui-nvim
-      plugins.nvim-web-devicons # TODO: Figure out how to configure using this with telescope
+      # plugins.nvim-web-devicons # TODO: Figure out how to configure using this with telescope
       plugins.vim-wordmotion
       plugins.vim-smartword
       plugins.telescope-file-browser-nvim

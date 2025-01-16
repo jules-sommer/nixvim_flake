@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  helpers,
   lib,
   ...
 }:
@@ -14,6 +15,7 @@ in
       # vim, regex, lua, bash, markdown, markdown_inline
       nixGrammars = true;
       nixvimInjections = true;
+      autoLoad = true;
 
       grammarPackages = with pkgs.vimPlugins.nvim-treesitter.builtGrammars; [
         bash
@@ -33,10 +35,35 @@ in
       ];
 
       settings = {
-        auto_install = true;
+        auto_install = false;
+        ensure_installed = "all";
+        highlight = {
+          additional_vim_regex_highlighting = true;
+          custom_captures = { };
+          disable = [
+            "rust"
+          ];
+          enable = true;
+        };
+        ignore_install = [
+          "rust"
+        ];
+        incremental_selection = {
+          enable = true;
+          keymaps = {
+            init_selection = false;
+            node_decremental = "grm";
+            node_incremental = "grn";
+            scope_incremental = "grc";
+          };
+        };
         indent = {
           enable = true;
         };
+        parser_install_dir = helpers.mkRaw ''
+          vim.fs.joinpath(vim.fn.stdpath('data'), 'treesitter')
+        '';
+        sync_install = false;
       };
     };
 
