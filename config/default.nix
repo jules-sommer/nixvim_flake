@@ -40,7 +40,6 @@ with lib;
       rustaceanvim = enabled;
       none-ls = enabled;
     };
-    # vim.loader.enable
     luaLoader = enabled;
     performance = {
       combinePlugins = {
@@ -50,7 +49,7 @@ with lib;
         ];
       };
       byteCompileLua = {
-        enable = false;
+        enable = helpers.enableExceptInTests;
         nvimRuntime = true;
         plugins = true;
       };

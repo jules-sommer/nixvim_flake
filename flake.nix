@@ -117,7 +117,6 @@
           packages = {
             # Lets you run `nix run .` to start nixvim
             default = nvim;
-            inherit nixvimLib;
             inherit (local_plugins)
               vim-smartword
               satellite-nvim
