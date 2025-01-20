@@ -65,7 +65,6 @@
                     system
                     overlays
                     ;
-
                 };
               };
             in
@@ -89,6 +88,7 @@
 
           nixvimLib = nixvim.lib.${system};
           nixvim' = nixvim.legacyPackages.${system};
+
           nixvimModule = {
             inherit pkgs;
             module = import ./config;

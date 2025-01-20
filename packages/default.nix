@@ -1,9 +1,24 @@
 { pkgs, ... }:
 let
   inherit (pkgs.vimUtils) buildVimPlugin;
-  inherit (pkgs.tree-sitter) buildGrammar;
+  inherit (builtins)
+    readDir
+    filter
+    attrNames
+    listToAttrs
+    ;
+
+  packagesDirContents = readDir ./.;
+  packageNamesList = filter (name: packagesDirContents.${name} == "directory") (
+    attrNames packagesDirContents
+  );
+
 in
-{
-  vim-smartword = import ./vim-smartword/default.nix { inherit buildVimPlugin pkgs; };
-  satellite-nvim = import ./satellite-nvim/default.nix { inherit pkgs buildVimPlugin; };
-}
+listToAttrs (
+  map (name: {
+    inherit name;
+    value = import (./${name}/default.nix) {
+      inherit buildVimPlugin pkgs;
+    };
+  }) packageNamesList
+)
