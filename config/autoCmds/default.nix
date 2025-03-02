@@ -30,7 +30,7 @@
     ];
 
   autoCmd = [
-    # TODO: Update all descriptions of autoGroups
+    # TODO: Update all descriptions of autoGroup
     {
       # pattern = "tostring(vim.api.nvim_get_current_win())";
       event = "WinClosed";
@@ -150,20 +150,14 @@
       ];
       group = "CloseWithQ";
       pattern = [
-        "PlenaryTestPopup"
-        "grug-far"
         "help"
         "lspinfo"
         "notify"
         "qf"
-        "spectre_panel"
         "startuptime"
+        "startup"
         "tsplayground"
-        "neotest-output"
         "checkhealth"
-        "neotest-summary"
-        "neotest-output-panel"
-        "dbout"
         "gitsigns.blame"
       ];
       callback = helpers.mkRaw ''
@@ -188,6 +182,7 @@
           local exclude = { "gitcommit" }
           local buf = event.buf
           if vim.tbl_contains(exclude, vim.bo[buf].filetype) or vim.b[buf].lazyvim_last_loc then
+            vim.notify("Table contains excluded filetype or previous last loc...")
             return
           end
           vim.b[buf].lazyvim_last_loc = true
@@ -241,27 +236,6 @@
         end
       '';
       desc = "Check if we need to reload the file when it changed";
-    }
-    {
-      event = [
-        "CursorHold"
-        "CursorHoldI"
-      ];
-      group = "CodeActionSign";
-      callback = helpers.mkRaw ''
-        function()
-          local CA = require('code_action_utils')
-
-          if CA ~= nil then
-            CA.ignore_buf_patterns(
-              function()
-                CA.code_action_listener()
-              end,
-              CA.ignore_patterns
-            )
-          end
-        end
-      '';
     }
     {
       event = "LspAttach";

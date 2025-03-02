@@ -5,150 +5,173 @@
   config,
   ...
 }:
+let
+  args = {
+    inherit helpers lib config;
+  };
+
+  mini_modules = {
+    completion = import ./completion.nix args;
+  };
+in
 with lib;
 {
+  imports = [
+    ./base16.nix
+    ./completion.nix
+    ./ai_textobjs.nix
+    ./animate.nix
+  ];
+
+  options.modules.mini = {
+    ai_textobjs = mkEnableOpt "Enable mini.ai text objects extensions module.";
+    base16 = mkEnableOpt "Enable mini.base16 colourscheme module.";
+    completion = mkEnableOpt "Enable mini.completion module, similar functionality to `cmp`.";
+    animate = mkEnableOpt "Enable mini.animate module, adds animations for scrolling and such.";
+  };
+
   config = {
-    extraConfigLua = ''
-      -- don't use animate when scrolling with the mouse
-      local mouse_scrolled = false
-      for _, scroll in ipairs({ "Up", "Down" }) do
-        local key = "<ScrollWheel" .. scroll .. ">"
-        vim.keymap.set({ "", "i" }, key, function()
-          mouse_scrolled = true
-          return key
-        end, { expr = true })
-      end
-    '';
     plugins.mini = {
       enable = true;
-      modules = {
-        ai = {
-          n_lines = 50;
-          search_method = "cover_or_next";
-        };
-        base16 = {
-          palette = with theme.colors; {
-            inherit
-              base00
-              base01
-              base02
-              base03
-              base04
-              base05
-              base06
-              base07
-              base08
-              base09
-              base0A
-              base0B
-              base0C
-              base0D
-              base0E
-              base0F
-              ;
-          };
-        };
-        diff = {
-          view = {
-            style = "sign";
-          };
-        };
-        animate =
-          {
-            cursor = {
-              enable = true;
-              timing = helpers.mkRaw ''
-                require("mini.animate").gen_timing.cubic({ easing = "in-out", duration = 33, unit = 'total' })
-              '';
-            };
-            scroll = {
-              enable = true;
-              timing = helpers.mkRaw ''
-                require("mini.animate").gen_timing.cubic({
-                  easing = "in-out",
-                  duration = 150,
-                  unit = "total"
-                })
-              '';
-              subscroll = helpers.mkRaw ''
-                animate.gen_subscroll.equal({
-                  predicate = function(total_scroll)
-                    if mouse_scrolled then
-                      mouse_scrolled = false
-                      return false
-                    end
-                    return total_scroll > 1
-                  end,
-                }),
-              '';
-            };
-            resize = {
-              enable = true;
-              timing = helpers.mkRaw ''
-                require("mini.animate").gen_timing.linear({ duration = 50, unit = "total" })
-              '';
-            };
-          }
-          // (mkIf (!config.plugins.cmp.enable) {
-            completion = {
-              window = {
-                info = {
-                  height = 25;
-                  width = 80;
-                  border = "rounded";
-                  zindex = 300;
-                  style = "minimal";
-                };
-                signature = {
-                  height = 25;
-                  width = 80;
-                  border = "rounded";
-                  zindex = 300;
-                  style = "minimal";
+      mockDevIcons = true;
+      modules = lib.mkMerge [
+        {
+          pick = { };
+          pairs = {
+            mappings = {
+              "(" = {
+                action = "open";
+                pair = "()";
+                neigh_pattern = "[^\\].";
+              };
+              "''" = {
+                action = "open";
+                pair = "''\n''";
+                neigh_pattern = "[^\\].";
+              };
+              "[" = {
+                action = "open";
+                pair = "[]";
+                neigh_pattern = "[^\\].";
+              };
+              "{" = {
+                action = "open";
+                pair = "{}";
+                neigh_pattern = "[^\\].";
+              };
+              ")" = {
+                action = "close";
+                pair = "()";
+                neigh_pattern = "[^\\].";
+              };
+              "]" = {
+                action = "close";
+                pair = "[]";
+                neigh_pattern = "[^\\].";
+              };
+              "}" = {
+                action = "close";
+                pair = "{}";
+                neigh_pattern = "[^\\].";
+              };
+              "\"" = {
+                action = "closeopen";
+                pair = "\"\"";
+                neigh_pattern = "[^%a\\].";
+                register = {
+                  cr = false;
                 };
               };
-              set_vim_settings = true;
+              "`" = {
+                action = "closeopen";
+                pair = "``";
+                neigh_pattern = "[^\\].";
+                register = {
+                  cr = false;
+                };
+              };
             };
-          });
-        icons = { }; # Icon provider 	README 	Help file
-        indentscope = {
-          # Draw options
-          draw = {
-            delay = 75;
-            priority = 2;
           };
-          mappings = {
-            object_scope = "ii";
-            object_scope_with_border = "ai";
+          snippets = { };
+          basics = { };
+          indentscope = { };
+          misc = { };
+          move = { };
+          sessions = { };
+          # hues = {
+          #   background = "#000000";
+          #   foreground = "#ffffff";
+          #   accent = "purple";
+          #   n_hues = 8;
+          # };
+          hipatterns = { };
+          git = { };
+          extra = { };
+          fuzzy = { };
+          diff = { };
+          visits = { };
+          test = { };
+          splitjoin = { };
+          ai = {
+            n_lines = 50;
+            search_method = "cover_or_next";
+            mappings = {
+              around = "a";
+              inside = "i";
 
-            goto_top = "[i";
-            goto_bottom = "]i";
-          };
+              around_next = "an";
+              inside_next = "in";
+              around_last = "al";
+              inside_last = "il";
 
-          options = {
-            border = "both";
-            indent_at_cursor = true;
+              goto_left = "g[";
+              goto_right = "g]";
+            };
+          };
+          diff = {
+            view = {
+              style = "sign";
+            };
+          };
+          icons = { }; # Icon provider 	README 	Help file
+          indentscope = {
+            draw = {
+              delay = 75;
+              priority = 2;
+            };
+            mappings = {
+              object_scope = "ii";
+              object_scope_with_border = "ai";
 
-            try_as_border = false;
+              goto_top = "[i";
+              goto_bottom = "]i";
+            };
+
+            options = {
+              border = "both";
+              indent_at_cursor = true;
+
+              try_as_border = false;
+            };
+            symbol = "│";
           };
-          symbol = "│";
-        };
-        surround = {
-          mappings = {
-            add = "gsa";
-            delete = "gsd";
-            find = "gsf";
-            find_left = "gsF";
-            highlight = "gsh";
-            replace = "gsr";
-            update_n_lines = "gsn";
+          surround = {
+            mappings = {
+              add = "gsa";
+              delete = "gsd";
+              find = "gsf";
+              find_left = "gsF";
+              highlight = "gsh";
+              replace = "gsr";
+              update_n_lines = "gsn";
+            };
           };
-        };
-        tabline = {
-          show_icons = true;
-        };
-        comment = { };
-      };
+          tabline = {
+            show_icons = true;
+          };
+          comment = { };
+        }
+      ];
     };
   };
 }

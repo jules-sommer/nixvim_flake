@@ -11,12 +11,17 @@ let
 in
 {
   config = mkIf cfg.enable {
-
     extraConfigLua = ''
       function DismissAllNotif(state)
         local silent, pending = state.silent, state.pending
-        require("notify").dismiss({ silent = silent, pending = pending })
+        local ok, notify = pcall(require, "notify")
+
+        if ok then
+        notify.dismiss({ silent = silent, pending = pending })
         vim.cmd("Noice dismiss")
+        else
+          vim.notify("`Notify` module is not available, failed to dismiss notifications.")
+        end
       end
     '';
 
@@ -77,8 +82,7 @@ in
           enabled = true;
           excludedFiletypes = [
             "cmp_menu"
-            "neo-tree"
-            "neo-tree-popup"
+            "oil"
             "cmp_docs"
             "notify"
           ];
@@ -148,7 +152,7 @@ in
           progress = {
             enabled = true;
             format = "lsp_progress";
-            formatDone = "lsp_progress";
+            formatDone = "lsp_progress_done";
             throttle = 1000 / 30;
             view = "mini";
           };

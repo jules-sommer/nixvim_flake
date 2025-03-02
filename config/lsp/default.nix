@@ -10,28 +10,71 @@ let
     mkEnableOption
     mkIf
     enabled
+    enabled'
     disabled
     ;
 
-  cfg = config.lsp;
-  incRenameEnabled = config.plugins.inc-rename.enable;
+  cfg = config.modules.lsp;
 in
 {
-  imports = [
-    ./none-ls
-    ./rustacean-nvim
-  ];
 
-  options.lsp = {
+  options.modules.lsp = {
     enable = mkEnableOption "Enable LSP configuration.";
   };
 
   config = mkIf cfg.enable {
     plugins = {
-      trouble = disabled;
+      tailwind-tools = enabled' {
+        settings = {
+          server = {
+            override = true;
+            settings = {
+              server = {
+                override = true;
+                on_attach = ''
+                  function(client, bufnr)
+                    print("Attached `", client, "` to bufnr: ", bufnr)
+                  end
+                '';
+              };
+              document_color = {
+                enabled = true;
+                kind = "inline";
+                inline_symbol = "󰝤 ";
+                debounce = 200;
+              };
+            };
+          };
+        };
+      };
+      conform-nvim = disabled;
+      # lint = enabled' {
+      #   autoLoad = true;
+      #   autoCmd = {
+      #     callback = {
+      #       __raw = ''
+      #         function()
+      #           require('lint').try_lint()
+      #         end
+      #       '';
+      #     };
+      #     event = "BufWritePost";
+      #   };
+      # };
+      trouble = enabled;
       lsp = {
         enable = true;
+        inlayHints = true;
         servers = {
+          # tailwindcss = enabled' {
+          #   autostart = true;
+          #   rootDir = ''
+          #     function(fname)
+          #       print("brooooooooooooooo")
+          #       print(fname)
+          #     end
+          #   '';
+          # };
           lua_ls = {
             enable = true;
             settings = {
@@ -39,6 +82,9 @@ in
             };
           };
           ts_ls = enabled;
+          taplo = enabled' {
+            autostart = true;
+          };
           htmx = enabled;
           zls = {
             enable = true;
@@ -57,6 +103,9 @@ in
           nil_ls = {
             enable = true;
             autostart = true;
+            settings = {
+              formatting.command = [ "nixfmt" ];
+            };
           };
           bashls = enabled;
           fish_lsp = {
@@ -70,89 +119,20 @@ in
           gopls = enabled;
           jsonls = enabled;
           pyright = enabled;
-          tailwindcss = enabled;
         };
       };
-
       luasnip = enabled;
       improved-search = enabled;
       indent-o-matic = enabled;
       colorizer = enabled;
       inc-rename = enabled;
       zig = enabled;
-      nvim-autopairs = enabled;
-      comment = disabled;
       nix = enabled;
       crates = enabled;
       direnv = enabled;
       lsp-lines = enabled;
       lsp-format = enabled;
       nix-develop = enabled;
-    };
-
-    extraConfigLuaPost = ''
-      local capabilities = require("cmp_nvim_lsp").default_capabilities()
-      local lspconfig = require('lspconfig')
-
-      local servers = { 'clangd', 'pyright', 'ts_ls' }
-      for _, lsp in ipairs(servers) do
-        if lspconfig[lsp] ~= nil then
-          lspconfig[lsp].setup {
-            capabilities = capabilities,
-          }
-        end
-      end
-    '';
-
-    extraFiles = {
-      "lua/code_action_utils.lua" = {
-        enable = true;
-        text = ''
-          local M = {}
-
-          local lsp_util = vim.lsp.util
-
-          M.ignore_patterns = {
-            "startify",
-            "dashboard",
-            "lazygit",
-            "neogitstatus",
-            "NvimTree",
-            "Outline",
-            "spectre_panel",
-            "toggleterm",
-            "Trouble",
-            "startup",
-            "help",
-            "mason",
-            "lazy",
-          }
-
-          function M.ignore_buf_patterns(callback, patterns)
-            local current_buffer_name = vim.api.nvim_buf_get_name(0)
-            for _, pattern in ipairs(patterns) do
-              if current_buffer_name:match(pattern) then
-                if callback then
-                  callback()
-                else 
-                  return 
-                end
-              end
-            end
-          end
-
-          function M.code_action_listener()
-            local context = { diagnostics = vim.diagnostic.get() }
-            local params = lsp_util.make_range_params()
-            params.context = context
-            vim.lsp.buf_request(0, 'textDocument/codeAction', params, function(err, result, ctx, config)
-              vim.notify(vim.inspect(result), vim.inspect(ctx), vim.inspect(config))
-            end)
-          end
-
-          return M
-        '';
-      };
     };
 
     autoGroups = {
@@ -164,50 +144,25 @@ in
       };
     };
 
-    autoCmd = [
-      {
-        event = [
-          "CursorHold"
-          "CursorHoldI"
-        ];
-        group = "CodeActionSign";
-        callback = helpers.mkRaw ''
-          function()
-            local M = require('code_action_utils')
-
-            M.ignore_buf_patterns(
-              function()
-                require('code_action_utils').code_action_listener()
-              end,
-              M.ignore_patterns
-            )
-          end
-        '';
-      }
-      {
-        event = "LspAttach";
-        group = "UserLspConfig";
-        callback = helpers.mkRaw ''
-          function(args)
-            local client = vim.lsp.get_client_by_id(args.data.client_id)
-            if client.server_capabilities.inlayHintProvider then
-              vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
-            end
-          end
-        '';
-      }
-    ];
-
     keymapsOnEvents = {
       LspAttach = [
-        {
+        (mkIf config.plugins.lsp-lines.enable {
           key = "<leader>l";
-          action = helpers.mkRaw "require('lsp_lines').toggle";
+          action = helpers.mkRaw ''
+            function()
+              local has_lsp_lines, lsp_lines = pcall(require, "lsp_lines")
+              if not has_lsp_lines then
+                vim.notify("lsp_lines not found.", vim.log.levels.WARN)
+                return
+              end
+              lsp_lines.toggle()
+            end
+          '';
           options = {
             desc = "Toggle LSP virtual line diagnostics";
             buffer = true;
           };
-        }
+        })
         {
           key = "gD";
           action = helpers.mkRaw "vim.lsp.buf.declaration";
@@ -222,14 +177,14 @@ in
             desc = "See available code actions";
           };
         }
-        (mkIf incRenameEnabled {
+        (mkIf config.plugins.inc-rename.enable {
           key = "<leader>rn";
           action = helpers.mkRaw "vim.lsp.buf.rename";
           options = {
             desc = "Semi-intelligent rename via LSP";
           };
         })
-        (mkIf (!incRenameEnabled) {
+        (mkIf (!config.plugins.inc-rename.enable) {
           key = "<leader>rn";
           action = "<cmd>IncRename<CR>";
           options = {

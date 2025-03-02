@@ -14,6 +14,7 @@
 
     nixvim.url = "github:nix-community/nixvim";
     flake-parts.url = "github:hercules-ci/flake-parts";
+    utils.url = "github:numtide/flake-utils";
 
     base24-themes.url = "github:jules-sommer/nix_b24_themes";
     neovim-nightly = {
@@ -31,13 +32,11 @@
       base24-themes,
       neovim-nightly,
       flake-parts,
+      utils,
       zls,
       ...
     }@inputs:
     let
-      inherit (inputs.unstable.legacyPackages.${"x86_64-linux"}.lib) composeManyExtensions;
-    in
-    flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -45,53 +44,67 @@
         "aarch64-darwin"
       ];
 
+      channels = utils.lib.eachSystem systems (
+        system:
+        let
+          mkChannel = input: rec {
+            inherit (pkgs) lib;
+            pkgs = input.legacyPackages.${system};
+            __input = input;
+          };
+        in
+        {
+          default = mkChannel unstable;
+          master = mkChannel master;
+        }
+      );
+
+      overlays = [
+        neovim-nightly.overlays.default
+        (_: prev: {
+          inherit (zls.outputs.packages.${prev.system}) zls;
+          neovim-unwrapped = prev.neovim;
+        })
+      ];
+    in
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      inherit systems;
       perSystem =
         { system, ... }:
         let
-          overlays = [
-            neovim-nightly.overlays.default
-            (_: prev: {
-              inherit (zls.outputs.packages.${prev.system}) zls;
-              neovim-unwrapped = prev.neovim;
-            })
-          ];
-
-          channels =
-            let
-              mkChannel = input: rec {
-                inherit (pkgs) lib;
-                pkgs = import input {
-                  inherit
-                    system
-                    overlays
-                    ;
-                };
-              };
-            in
-            {
-              unstable = mkChannel unstable;
-              master = mkChannel master;
-            };
-
-          pkgs = import unstable {
+          pkgs = import channels.default.${system}.__input {
             inherit system overlays;
           };
 
-          # Merges the local library functions with that of the nixvimLib extendedLib (a version of nixpkgs lib with nixvim lib helpers merged in)
-          localFlakeLib = import ./lib { inherit (pkgs) lib; };
-          lib = (pkgs.lib.extend nixvim.lib.overlay).extend (_: _: localFlakeLib);
+          inherit (pkgs.lib) extend;
 
-          local_plugins = import ./packages/default.nix { inherit pkgs lib; };
+          local = {
+            lib = import ./lib { inherit (pkgs) lib; };
+            plugins = import ./packages { inherit pkgs lib; };
+          };
+
+          # extends nixpkgs lib with nixvim's lib overlay, and then extends the resulting
+          # lib with our own local lib functions to create one unified lib to pass thru module args.
+          lib = (extend nixvim.lib.overlay).extend (_: _: local.lib);
 
           theme = base24-themes.themes.tokyo_night_dark;
-          plugins = pkgs.vimPlugins // local_plugins;
+          plugins = pkgs.vimPlugins // local.plugins;
 
           nixvimLib = nixvim.lib.${system};
           nixvim' = nixvim.legacyPackages.${system};
 
           nixvimModule = {
             inherit pkgs;
-            module = import ./config;
+            module =
+              { ... }:
+              {
+                imports = [
+                  ./config
+                ];
+                nixpkgs = {
+                  inherit pkgs;
+                };
+              };
             extraSpecialArgs = {
               inherit
                 lib
@@ -117,37 +130,11 @@
           packages = {
             # Lets you run `nix run .` to start nixvim
             default = nvim;
-            inherit (local_plugins)
-              vim-smartword
-              satellite-nvim
-              ;
-          };
+          } // local.plugins;
         };
-
-      flake = {
-        overlays = {
-          default = composeManyExtensions [
-            neovim-nightly.overlays.default
-            (_: prev: {
-              inherit (zls.outputs.packages.${prev.system}) zls;
-              neovim-unwrapped = prev.neovim;
-            })
-          ];
-        };
-      };
     }
     // {
-      nixosModules.default =
-        {
-          pkgs,
-          ...
-        }:
-        {
-          config = {
-            environment.systemPackages = [
-              self.packages.${pkgs.system}.default
-            ];
-          };
-        };
+      inherit channels;
     };
+
 }

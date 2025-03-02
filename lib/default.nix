@@ -20,6 +20,44 @@ rec {
     type: default: description:
     mkOption { inherit type default description; };
 
+  mkEnableOpt = desc: {
+    enable = lib.mkEnableOption desc;
+  };
+
+  # Enables a NixOS module option if the provided predicate evaluates to true.
+  # Also takes an attrset for additional option configuration.
+  #
+  # Example:
+  # ```nix
+  # byteCompileLua = enablePred helpers.enableExceptInTests;
+  # ````
+  # Results in the attrset, bool depends on the pred fn:
+  # ```nix
+  # byteCompileLua = {
+  #   enable = bool,
+  # }
+  # ````
+  enablePred = fn: {
+    enable = fn;
+  };
+
+  # Enables a NixOS module option if the provided predicate evaluates to true.
+  # Also takes an attrset for additional option configuration.
+  #
+  # Example:
+  # ```nix
+  # byteCompileLua = enablePred' helpers.enableExceptInTests {
+  #   nvimRuntime = true;
+  #   plugins = true;
+  # };
+  # ````
+  enablePred' =
+    fn: cfg:
+    {
+      enable = fn;
+    }
+    // cfg;
+
   ## Create a NixOS module option without a description.
   ##
   ## ```nix
@@ -46,9 +84,18 @@ rec {
   ##
   #@ Type -> Any -> String
   mkBoolOpt' = mkOpt' types.bool;
+
   enabled = {
     enable = true;
   };
+
+  enabled' =
+    cfg:
+    {
+      enable = true;
+    }
+    // cfg;
+
   disabled = {
     enable = false;
   };

@@ -1,5 +1,14 @@
 {
   keymaps = [
+    {
+      mode = "n";
+      key = "n";
+      action = "<Cmd>lua vim.cmd('normal! n'); require('mini.animate').execute_after('scroll', 'normal! zvzz')<CR>";
+      options = {
+        desc = "Find next match and center with animation";
+        silent = true;
+      };
+    }
     # terminal floats
     {
       key = "<leader>";
@@ -395,18 +404,18 @@
     }
 
     # commenting
-    {
-      mode = "n";
-      key = "gco";
-      action = "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>";
-      options.desc = "Add Comment Below";
-    }
-    {
-      mode = "n";
-      key = "gcO";
-      action = "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>";
-      options.desc = "Add Comment Above";
-    }
+    # {
+    #   mode = "n";
+    #   key = "gco";
+    #   action = "o<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>";
+    #   options.desc = "Add Comment Below";
+    # }
+    # {
+    #   mode = "n";
+    #   key = "gcO";
+    #   action = "O<esc>Vcx<esc><cmd>normal gcc<cr>fxa<bs>";
+    #   options.desc = "Add Comment Above";
+    # }
     {
       key = "<leader>w";
       action = "<cmd>w<CR>";

@@ -1,6 +1,5 @@
 {
   config,
-  pkgs,
   lib,
   helpers,
   ...
@@ -9,18 +8,21 @@ let
   inherit (lib)
     mkIf
     enabled
+    disabled
     types
     mkOpt
+    mkEnableOpt
     ;
-  cfg = config.plugins.cmp;
-  cfgLocal = config.xeta.cmp;
+
+  isEnabled = config.plugins.cmp.enable;
+  cfg = config.modules.cmp;
 in
 {
   imports = [
     ./keymaps.nix
   ];
 
-  options.xeta.cmp = {
+  options.modules.cmp = {
     sources = {
       path = mkOpt (types.enum [
         "async"
@@ -29,7 +31,7 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
+  config = mkIf isEnabled {
     plugins = {
       cmp-treesitter = {
         enable = lib.mkDefault helpers.enableExceptInTests;
@@ -45,11 +47,10 @@ in
       cmp-nvim-lsp-document-symbol = enabled;
       cmp-nvim-lsp-signature-help = enabled;
       cmp_luasnip = enabled;
-      coq-nvim = enabled;
-      coq-thirdparty = enabled;
-      cmp-calc = enabled;
-      cmp-rg = enabled;
-      cmp-async-path = mkIf (cfgLocal.sources.path == "async") enabled;
+      coq-nvim = disabled;
+      coq-thirdparty = disabled;
+      cmp-calc = disabled;
+      cmp-async-path = mkIf (cfg.sources.path == "async") enabled;
 
       lspkind = {
         enable = true;
@@ -84,7 +85,7 @@ in
             };
           };
 
-          asyncPathEnabled = config.xeta.cmp.sources.path == "async";
+          asyncPathEnabled = config.modules.cmp.sources.path == "async";
         in
         {
           settings = {
@@ -152,7 +153,6 @@ in
                 keyword_length = 1;
               })
             ];
-
           };
 
           # plugins.cmp.cmdline..window.documentation.winhighlight;

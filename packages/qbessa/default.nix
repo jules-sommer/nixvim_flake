@@ -3,7 +3,7 @@
   pname = "qbessa";
   version = "2025-01-20";
   src = pkgs.fetchFromGitHub {
-    #https://github.com/sgraham/qbessa.vim
+    # https://github.com/sgraham/qbessa.vim
     owner = "sgraham";
     repo = "qbessa.vim";
     rev = "30ba219";

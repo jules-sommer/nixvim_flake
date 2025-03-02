@@ -9,7 +9,7 @@ let
   cfg = config.lsp.none-ls;
 in
 {
-  options.lsp.none-ls = {
+  options.modules.lsp.none-ls = {
     enable = mkEnableOption "Enable none-ls configuration.";
   };
 
