@@ -25,31 +25,25 @@ with lib;
     ./keymaps
     ./mini
     ./noice
+    ./notify
+    ./vim-opts.nix
   ];
 
   config = {
-    # settings for this flake's implementation of nixvim
-    colorschemes = {
-      tokyonight.enable = true;
-      rose-pine.enable = false;
-      kanagawa.enable = false;
+    colorschemes.tokyonight = enabled;
+    lsp = enabled' {
+      rustaceanvim = disabled;
+      none-ls = disabled;
     };
 
-    lsp = {
-      enable = true;
-      rustaceanvim = enabled;
-      none-ls = enabled;
-    };
     luaLoader = enabled;
     performance = {
-      combinePlugins = {
-        enable = true;
+      combinePlugins = enabled' {
         standalonePlugins = [
           "nvim-treesitter"
         ];
       };
-      byteCompileLua = {
-        enable = helpers.enableExceptInTests;
+      byteCompileLua = enablePred' helpers.enableExceptInTests {
         nvimRuntime = true;
         plugins = true;
       };
@@ -63,9 +57,7 @@ with lib;
       ollama = enabled;
       noice = enabled;
       hop = enabled;
-      treesitter = {
-        enable = helpers.enableExceptInTests;
-      };
+      treesitter = enablePred helpers.enableExceptInTests;
       cmp = enabled;
     };
 
@@ -74,21 +66,6 @@ with lib;
       maplocalleader = " ";
       have_nerd_font = true;
       bigfile_size = 1024 * 1024 * 3; # 3mb
-    };
-
-    filetype = {
-      pattern = {
-        ".*" = helpers.mkRaw ''
-          function(path, buf)
-            return vim.bo[buf]
-                and vim.bo[buf].filetype ~= "bigfile"
-                and path
-                and vim.fn.getfsize(path) > vim.g.bigfile_size
-                and "bigfile"
-              or nil
-          end
-        '';
-      };
     };
 
     diagnostics = {
@@ -124,74 +101,13 @@ with lib;
       severity_sort = true;
     };
 
-    opts = {
-      background = "dark";
-      backup = false; # creates a backup file
-      writebackup = false; # if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
-      clipboard = "unnamedplus"; # allows neovim to access the system clipboard
-      cmdheight = 1; # more space in the neovim command line for displaying messages
-      completeopt = [
-        "menuone"
-        "noselect"
-        "noinsert"
-      ];
-      conceallevel = 0; # so that `` is visible in markdown files
-      fileencoding = "utf-8"; # the encoding written to a file
-      hidden = true; # required to keep multiple buffers and open multiple buffers
-
-      hlsearch = true; # highlight all matches on previous search pattern
-      incsearch = true;
-      ignorecase = true; # ignore case in search patterns
-
-      showmode = false; # we don't need to see things like -- INSERT -- anymore
-      smartcase = true; # smart case
-      splitbelow = true; # force all horizontal splits to go below current window
-      splitright = true; # force all vertical splits to go to the right of current window
-      swapfile = false; # creates a swapfile
-      termguicolors = true; # set term gui colors (most terminals support this)
-      timeoutlen = 350; # time to wait for a mapped sequence to complete (in milliseconds)
-      title = true; # set the title of window to the value of the titlestring
-      titlestring = "%<%F%=%l/%L - xetavim"; # what the title of the window will be set to
-      undofile = true; # enable persistent undo
-      updatetime = 50; # faster completion
-      expandtab = true; # convert tabs to spaces
-      autoindent = true;
-      smartindent = true;
-      shiftwidth = 2; # the number of spaces inserted for each indentation
-      softtabstop = 2;
-      tabstop = 2; # insert 2 spaces for a tab
-      cursorline = true; # highlight the current line
-      relativenumber = true; # make line numbering relative to cursor position
-      numberwidth = 2; # set number column width to 2 {default 4}
-      signcolumn = "yes"; # always show the sign column, otherwise it would shift the text each time
-      wrap = false; # display lines as one long line
-      scrolloff = 8; # minimal number of screen lines to keep above and below the cursor.
-      sidescrolloff = 8; # minimal number of screen lines to keep left and right of the cursor.
-      showcmd = false;
-      ruler = false;
-      laststatus = 3;
-      autowrite = true;
-      wildmode = "longest:full,full";
-      virtualedit = "block"; # allow cursor to move where there is no text in visual block mode:wildmode
-      smoothscroll = true;
-      foldmethod = "expr";
-      linebreak = true; # Wrap lines at convenient points
-      list = true; # Show some invisible characters (tabs...
-      mouse = "a"; # Enable mouse mode
-      number = true; # Print line number
-      pumblend = 10; # Popup blend
-      pumheight = 10; # Maximum number of entries in a popup
-    };
-
     plugins = {
-      render-markdown = {
-        enable = true;
+      render-markdown = enabled' {
         settings = {
           debounce = 100;
           max_file_size = 20.0;
           injections = {
-            gitcommit = {
-              enabled = true;
+            gitcommit = enabled' {
               query = ''
                 ((message) @injection.content
                     (#set! injection.combined)
@@ -204,8 +120,7 @@ with lib;
       };
       web-devicons = enabled;
       fugitive = disabled;
-      git-conflict = {
-        enable = false;
+      git-conflict = enabled' {
         settings = {
           default_commands = true;
           default_mappings = {
@@ -225,11 +140,8 @@ with lib;
         };
       };
       undotree = enabled;
-      persistence = {
-        enable = true;
-      };
-      indent-blankline = {
-        enable = true;
+      persistence = enabled;
+      indent-blankline = enabled' {
         settings = {
           exclude = {
             buftypes = [
@@ -254,23 +166,16 @@ with lib;
         };
       };
 
-      sleuth = {
-        enable = false;
-      };
+      sleuth = disabled;
 
-      # TODO: qwjqwid
-      # INFO: Highlight todo, notes, etc in comments
-      # https://nix-community.github.io/nixvim/plugins/todo-comments/index.html
-      todo-comments = {
-        enable = true;
+      todo-comments = enabled' {
         settings = {
           signs = true;
         };
       };
 
       barbecue = enabled;
-      rainbow-delimiters = {
-        enable = helpers.enableExceptInTests;
+      rainbow-delimiters = enablePred' helpers.enableExceptInTests {
         strategy = {
           "" = "global";
           vim = "local";
@@ -295,43 +200,20 @@ with lib;
       ccc = disabled;
       floaterm = disabled;
       gitsigns = disabled;
-      notify = {
-        enable = true;
-        fps = 60;
-        timeout = 3000;
-        stages = "static";
-        maxHeight = helpers.mkRaw ''
-          function()
-            return math.floor(vim.o.lines * 0.75)
-          end
-        '';
-        maxWidth = helpers.mkRaw ''
-          function()
-            return math.floor(vim.o.columns * 0.75)
-          end
-        '';
-        onOpen = helpers.mkRaw ''
-          function(win)
-            vim.api.nvim_win_set_config(win, { zindex = 100 })
-          end
-        '';
-        backgroundColour = "NotifyBackground";
-      };
-      lazygit = disabled;
-      transparent = {
-        enable = true;
-      };
+      lazygit = enabled;
+      transparent = enabled;
     };
 
-    extraPlugins = [
-      plugins.nvim-lspconfig
-      plugins.nvim-various-textobjs
-      plugins.nvim-treesitter-textsubjects
-      plugins.satellite-nvim
-      # plugins.nvim-web-devicons # TODO: Figure out how to configure using this with telescope
-      plugins.vim-wordmotion
-      plugins.vim-smartword
-      plugins.telescope-file-browser-nvim
+    extraPlugins = with plugins; [
+      mason-nvim
+      mason-lspconfig-nvim
+      mason-null-ls-nvim
+      nvim-various-textobjs
+      nvim-treesitter-textsubjects
+      satellite-nvim
+      vim-wordmotion
+      vim-smartword
+      telescope-file-browser-nvim
     ];
   };
 }

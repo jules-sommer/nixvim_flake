@@ -15,8 +15,7 @@ in
 
   config = mkIf cfg.enable {
     plugins = {
-      none-ls = {
-        enable = true;
+      none-ls = enabled' {
         enableLspFormat = true;
         settings = {
           border = "rounded";

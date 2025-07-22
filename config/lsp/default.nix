@@ -11,6 +11,7 @@ let
     mkIf
     enabled
     disabled
+    enabled'
     ;
 
   cfg = config.lsp;
@@ -29,19 +30,16 @@ in
   config = mkIf cfg.enable {
     plugins = {
       trouble = disabled;
-      lsp = {
-        enable = true;
+      lsp = enabled' {
         servers = {
-          lua_ls = {
-            enable = true;
+          lua_ls = enabled' {
             settings = {
               telemetry = disabled;
             };
           };
           ts_ls = enabled;
           htmx = enabled;
-          zls = {
-            enable = true;
+          zls = enabled' {
             autostart = true;
             package = pkgs.zls;
             settings = {
@@ -54,13 +52,11 @@ in
             };
           };
           nixd = disabled;
-          nil_ls = {
-            enable = true;
+          nil_ls = enabled' {
             autostart = true;
           };
           bashls = enabled;
-          fish_lsp = {
-            enable = true;
+          fish_lsp = enabled' {
             package = pkgs.fish-lsp;
           };
           html = enabled;
