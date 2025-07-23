@@ -2,35 +2,38 @@
   lib,
   pkgs,
   helpers,
-  config,
-  plugins,
-  theme,
+  system,
+  inputs,
   ...
 }:
 with lib;
 {
   imports = [
-    ./colorscheme
-    ./yanky
-    ./lsp
-    ./hop
-    ./cmp
-    ./telescope
-    ./treesitter
-    ./startup
-    ./oil
-    ./undotree
     ./autoCmds
-    ./satellite
+    ./cmp
+    ./colorscheme
+    ./hop
     ./keymaps
+    ./lsp
     ./mini
     ./noice
     ./notify
+    ./oil
+    ./satellite
+    ./startup
+    ./telescope
+    ./treesitter
+    ./undotree
+    ./yanky
+    ./extra-plugins.nix
     ./vim-opts.nix
   ];
 
   config = {
     colorschemes.tokyonight = enabled;
+    nixpkgs = { inherit pkgs; };
+    package = inputs.neovim-nightly.packages.${system}.default;
+
     lsp = enabled' {
       rustaceanvim = disabled;
       none-ls = disabled;
@@ -204,16 +207,5 @@ with lib;
       transparent = enabled;
     };
 
-    extraPlugins = with plugins; [
-      mason-nvim
-      mason-lspconfig-nvim
-      mason-null-ls-nvim
-      nvim-various-textobjs
-      nvim-treesitter-textsubjects
-      satellite-nvim
-      vim-wordmotion
-      vim-smartword
-      telescope-file-browser-nvim
-    ];
   };
 }

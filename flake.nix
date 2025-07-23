@@ -41,15 +41,16 @@
           nixvimLib = nixvim.lib.${system};
           nixvim' = nixvim.legacyPackages.${system};
           nixvimModule = {
-            inherit system; # or alternatively, set `pkgs`
-            module = import ./config; # import the module directly
-            # You can use `extraSpecialArgs` to pass additional arguments to your module files
+            inherit system;
+            module = import ./config;
             extraSpecialArgs = {
               inherit
                 lib
                 pkgs
                 plugins
                 theme
+                inputs
+                system
                 ;
             };
           };
@@ -66,6 +67,13 @@
         };
       flake = {
         lib = import ./lib { inherit (nixpkgs) lib; };
+        plugins = flake-utils.lib.eachDefaultSystem (
+          system:
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+          in
+          import ./packages/default.nix { inherit pkgs lib; } // pkgs.vimPlugins
+        );
       };
     };
 
